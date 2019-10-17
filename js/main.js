@@ -35,46 +35,75 @@ var ad = {
   }
 };
 
+var arr = ad.author.avatar;
+var newArr = arr.slice(); // создаем копию нужного нам массива
+
 var dom = {
   mapElement: document.querySelector('.map'),
   similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
   similarPins: document.querySelector('.map').querySelector('.map__pins')
 };
 
+// создаем функцию для выбора случайного значения из копии массива
+var getRandomElement = function () {
+  var k = Math.floor(Math.random() * newArr.length);
+  var random = newArr[k];
+  newArr.splice(k, 1);
+  return random;
+};
+
 // создаем функцию для генерации объекта со случайными значениями
 var createRandomObj = function () {
-  var randomObj = {}; // создаем пустой объект для записи случайных значений
+  var mainObj = {}; // создаем пустой объект для записи значений
+  var author = {};
+  var offer = {};
+  var location = {};
   var locationX = ad.location.x();
   var locationY = ad.location.y();
-  var arr = ad.author.avatar;
-  var newArr = arr.splice(0, 1);
-  randomObj.address = 'left: ' + locationX + 'px;' + ' top: ' + locationY + 'px;';
-  randomObj.avatar = newArr[0];
-  randomObj.title = ad.offer.title;
-  return randomObj;
+  var randomElementArr = getRandomElement(newArr);
+  author.avatar = randomElementArr;
+  offer.title = ad.offer.title;
+  offer.address = 'left: ' + locationX + 'px;' + ' top: ' + locationY + 'px;';
+  offer.price = ad.offer.price;
+  offer.type = ad.offer.type;
+  offer.rooms = ad.offer.rooms;
+  offer.guests = ad.offer.guests;
+  offer.checkin = ad.offer.checkin;
+  offer.checkout = ad.offer.checkout;
+  offer.features = ad.offer.features;
+  offer.description = ad.offer.description;
+  offer.photos = ad.offer.photos;
+  location.x = ad.location.x;
+  location.y = ad.location.y;
+
+  mainObj.author = author;
+  mainObj.offer = offer;
+  mainObj.location = location;
+
+  return mainObj;
 };
 
-// создаем функцию для генерации масссива из N объектов со случайными значениями
 var createArrOfObj = function () {
-  var arr = []; // создаем пустой массив для записи в него объектов
+  var a = []; // создаем пустой массив для записи в него объектов
   for (var i = 0; i < numberOfObj; i++) {
-    arr.push(createRandomObj());
+    a.push(createRandomObj());
   }
-  return arr;
-};
-
-var renderPin = function () {
-  var pinElement = dom.similarPinTemplate.cloneNode(true);
-  pinElement.style = randomArr[i].address;
-  pinElement.querySelector('img').src = randomArr[i].avatar;
-  pinElement.querySelector('img').alt = randomArr[i].title;
-  return pinElement;
+  return a;
 };
 
 var randomArr = createArrOfObj(numberOfObj);
+
+var renderPin = function () {
+  var pinElement = dom.similarPinTemplate.cloneNode(true);
+  pinElement.style = randomArr[i].offer.address;
+  pinElement.querySelector('img').src = randomArr[i].author.avatar;
+  pinElement.querySelector('img').alt = randomArr[i].offer.title;
+  return pinElement;
+};
+
 var fragment = document.createDocumentFragment();
 for (var i = 0; i < 8; i++) {
-  fragment.appendChild(renderPin(randomArr[i]));
+  fragment.appendChild(renderPin());
 }
 dom.mapElement.classList.remove('.map--faded');
 dom.similarPins.appendChild(fragment);
