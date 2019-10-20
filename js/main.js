@@ -1,6 +1,11 @@
 'use strict';
 
 var numberOfObj = 8;
+var ENTER_KEYCODE = 13;
+var PIN_X0 = 570; // начальные координаты метки по x
+var PIN_Y0 = 375; // начальные координаты метки по y
+var PIN_SIZE_X = 65; // размеры метки по горизонтали
+var PIN_SIZE_Y = 65; // размеры метки по вертикали
 
 var ad = {
   author: {
@@ -10,7 +15,7 @@ var ad = {
   },
   offer: {
     title: 'Заголовок объявления',
-    address: 'left: 600px; top: 350px;',
+    address: 'left: 570px; top: 375px;',
     price: 1000,
     type: ['palace', 'flat', 'house', 'bungalo'],
     rooms: 1,
@@ -24,7 +29,7 @@ var ad = {
   location: {
     x: function getRandomlocationY(min, max) {
       min = Math.ceil(0);
-      max = Math.floor(1040);
+      max = Math.floor(1150);
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
     y: function getRandomlocationX(min, max) {
@@ -35,14 +40,22 @@ var ad = {
   }
 };
 
-var arr = ad.author.avatar;
-var newArr = arr.slice(); // создаем копию нужного нам массива
-
 var dom = {
   mapElement: document.querySelector('.map'),
   similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
-  similarPins: document.querySelector('.map').querySelector('.map__pins')
+  similarPins: document.querySelector('.map').querySelector('.map__pins'),
+  activeMode: document.querySelector('.map__pin--main'),
+  adFormElement: document.querySelector('.ad-form'),
+  filterContainerElement: document.querySelector('.map__filters-container'),
+  inputAddress: document.querySelector('#address'),
+  roomsNumberSelect: document.querySelector('#room_number'),
+  guestsNumberSelect: document.querySelector('#capacity')
 };
+
+var arr = ad.author.avatar;
+var newArr = arr.slice(); // создаем копию нужного нам массива
+var guestsNumber = dom.guestsNumberSelect;
+var roomsNumber = dom.roomsNumberSelect;
 
 // создаем функцию для выбора случайного значения из копии массива
 var getRandomElement = function () {
@@ -105,5 +118,61 @@ var fragment = document.createDocumentFragment();
 for (var i = 0; i < 8; i++) {
   fragment.appendChild(renderPin());
 }
-dom.mapElement.classList.remove('.map--faded');
+
 dom.similarPins.appendChild(fragment);
+dom.inputAddress.placeholder = ad.offer.address; // начальные координаты метки
+dom.adFormElement.querySelectorAll('fieldset').forEach(el => el.disabled = true); // блокировка полей создания объявления
+dom.filterContainerElement.querySelectorAll('select').forEach(el => el.disabled = true); // блокировка полей фильтра объявлений
+dom.filterContainerElement.querySelector('fieldset').disabled = true; // блокировка полей фильтра объявлений
+
+var activeMode = function () {
+  dom.mapElement.classList.remove('map--faded'); // активация карты
+  dom.inputAddress.placeholder = 'left: ' + parseInt(PIN_X0 + PIN_SIZE_X * 0.5) + 'px;' + ' top: ' + parseInt(PIN_Y0 + PIN_SIZE_X) + 'px;'; // координаты метки после активации карты
+  dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
+  dom.adFormElement.querySelectorAll('fieldset').forEach(el => el.disabled = false); // активация полей создания объявления
+  dom.filterContainerElement.querySelectorAll('select').forEach(el => el.disabled = false); // активация полей фильтра объявлений
+  dom.filterContainerElement.querySelector('fieldset').disabled = false; // активация полей фильтра объявлений
+};
+
+// переход в активное состояние при нажатии на метку
+dom.activeMode.addEventListener('mousedown', function () {
+  activeMode();
+});
+// переход в активное состояние при нажатии ESC
+dom.activeMode.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activeMode();
+  }
+});
+
+// создаем обработчик события на изменения select и синхронизируем варинаты выбора кол-ва комнат и гостей
+roomsNumber.addEventListener('change', function () {
+  var valueOpt = roomsNumber.value;
+  if (valueOpt == 1) {
+    guestsNumber.children[0].disabled = true;
+    guestsNumber.children[1].disabled = true;
+    guestsNumber.children[2].disabled = false;
+    guestsNumber.children[3].disabled = true;
+  } else if (valueOpt == 2) {
+    guestsNumber.children[0].disabled = true;
+    guestsNumber.children[1].disabled = false;
+    guestsNumber.children[2].disabled = false;
+    guestsNumber.children[3].disabled = true;
+  } else if (valueOpt == 3) {
+    guestsNumber.children[0].disabled = false;
+    guestsNumber.children[1].disabled = false;
+    guestsNumber.children[2].disabled = false;
+    guestsNumber.children[3].disabled = true;
+  } else if (valueOpt == 100) {
+    guestsNumber.children[0].disabled = true;
+    guestsNumber.children[1].disabled = true;
+    guestsNumber.children[2].disabled = true;
+    guestsNumber.children[3].disabled = false;
+  }
+});
+
+// начальное состояние  select для количества гостей
+guestsNumber.children[0].disabled = true;
+guestsNumber.children[1].disabled = true;
+guestsNumber.children[2].disabled = false;
+guestsNumber.children[3].disabled = true;
