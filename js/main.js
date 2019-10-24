@@ -2,10 +2,6 @@
 
 var numberOfObj = 8;
 var ENTER_KEYCODE = 13;
-var PIN_X0 = 570; // начальные координаты метки по x
-var PIN_Y0 = 375; // начальные координаты метки по y
-var PIN_SIZE_X = 65; // размеры метки по горизонтали
-var PIN_SIZE_Y = 65; // размеры метки по вертикали
 
 var ad = {
   author: {
@@ -15,7 +11,7 @@ var ad = {
   },
   offer: {
     title: 'Заголовок объявления',
-    address: 'left: 570px; top: 375px;',
+    address: '570px; 375px;',
     price: 1000,
     type: ['palace', 'flat', 'house', 'bungalo'],
     rooms: 1,
@@ -27,14 +23,14 @@ var ad = {
     photos: ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']
   },
   location: {
-    x: function getRandomlocationY(min, max) {
-      min = Math.ceil(0);
-      max = Math.floor(1150);
+    x: function getRandomlocationY() {
+      var min = 0;
+      var max = 1150;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-    y: function getRandomlocationX(min, max) {
-      min = Math.ceil(130);
-      max = Math.floor(630);
+    y: function getRandomlocationX() {
+      var min = 130;
+      var max = 630;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
   }
@@ -44,12 +40,32 @@ var dom = {
   mapElement: document.querySelector('.map'),
   similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
   similarPins: document.querySelector('.map').querySelector('.map__pins'),
-  activeMode: document.querySelector('.map__pin--main'),
+  pinElem: document.querySelector('.map__pin--main'),
+  muffinElem: document.querySelector('.map__pin--main').querySelector('img'),
   adFormElement: document.querySelector('.ad-form'),
-  filterContainerElement: document.querySelector('.map__filters-container'),
+  fieldsetForm: document.querySelector('.ad-form').querySelectorAll('fieldset'),
+  selectFilter: document.querySelector('.map__filters-container').querySelectorAll('select'),
+  fieldsetFilter: document.querySelector('.map__filters-container').querySelector('fieldset'),
   inputAddress: document.querySelector('#address'),
   roomsNumberSelect: document.querySelector('#room_number'),
   guestsNumberSelect: document.querySelector('#capacity')
+};
+
+var pin = {
+  pinTop: window.getComputedStyle(dom.pinElem, null).getPropertyValue('top'), // 375px
+  pinLeft: window.getComputedStyle(dom.pinElem, null).getPropertyValue('left'), // 570px
+  pinHeightMuffin: window.getComputedStyle(dom.muffinElem, null).getPropertyValue('height'), // 44px
+  pinWidthMuffin: window.getComputedStyle(dom.muffinElem, null).getPropertyValue('width'), // 40px
+  pinHeight: window.getComputedStyle(dom.pinElem, ':after').height, // 70px !!! <- не правильно показывает значение
+  pinWidth: window.getComputedStyle(dom.pinElem, ':after').width, // 50px !!! <- не правильно показывает значение
+  pinActiveMode: function getPinActiveValue() {
+    var pinValueXY = (parseInt(pin.pinTop, 10) + 0.5 * parseInt(pin.pinHeightMuffin, 10)) + 'px; ' + (parseInt(pin.pinLeft, 10) + 0.5 * parseInt(pin.pinWidthMuffin, 10)) + 'px;';
+    return pinValueXY;
+  },
+  pinNoActiveMode: function getPinNoActiveValue() {
+    var pinValueXY = (parseInt(pin.pinTop, 10) + parseInt(pin.pinHeight, 10)) + 'px; ' + (parseInt(pin.pinLeft, 10) + 0.5 * parseInt(pin.pinWidth, 10)) + 'px;';
+    return pinValueXY;
+  }
 };
 
 var arr = ad.author.avatar;
@@ -59,10 +75,10 @@ var roomsNumber = dom.roomsNumberSelect;
 
 // создаем функцию для выбора случайного значения из копии массива
 var getRandomElement = function () {
-  var k = Math.floor(Math.random() * newArr.length);
-  var random = newArr[k];
-  newArr.splice(k, 1);
-  return random;
+  var randomNumber = Math.floor(Math.random() * newArr.length);
+  var randomChoice = newArr[randomNumber];
+  newArr.splice(randomNumber, 1);
+  return randomChoice;
 };
 
 // создаем функцию для генерации объекта со случайными значениями
@@ -73,7 +89,7 @@ var createRandomObj = function () {
   var location = {};
   var locationX = ad.location.x();
   var locationY = ad.location.y();
-  var randomElementArr = getRandomElement(newArr);
+  var randomElementArr = getRandomElement();
   author.avatar = randomElementArr;
   offer.title = ad.offer.title;
   offer.address = 'left: ' + locationX + 'px;' + ' top: ' + locationY + 'px;';
@@ -96,16 +112,17 @@ var createRandomObj = function () {
   return mainObj;
 };
 
+// создаем функцию для записи сгенерированных N объектов в массив
 var createArrOfObj = function () {
-  var a = []; // создаем пустой массив для записи в него объектов
+  var arrOfObj = []; // создаем пустой массив для записи в него объектов
   for (var i = 0; i < numberOfObj; i++) {
-    a.push(createRandomObj());
+    arrOfObj.push(createRandomObj());
   }
-  return a;
+  return arrOfObj;
 };
-
 var randomArr = createArrOfObj(numberOfObj);
 
+// создаем функцию для отрисовки метки на карте
 var renderPin = function () {
   var pinElement = dom.similarPinTemplate.cloneNode(true);
   pinElement.style = randomArr[i].offer.address;
@@ -114,65 +131,83 @@ var renderPin = function () {
   return pinElement;
 };
 
+// создаем функцию для отрисовки N меток на карте
 var fragment = document.createDocumentFragment();
 for (var i = 0; i < 8; i++) {
   fragment.appendChild(renderPin());
 }
 
-dom.similarPins.appendChild(fragment);
-dom.inputAddress.placeholder = ad.offer.address; // начальные координаты метки
-dom.adFormElement.querySelectorAll('fieldset').forEach(el => el.disabled = true); // блокировка полей создания объявления
-dom.filterContainerElement.querySelectorAll('select').forEach(el => el.disabled = true); // блокировка полей фильтра объявлений
-dom.filterContainerElement.querySelector('fieldset').disabled = true; // блокировка полей фильтра объявлений
+// создаем функцию для присваивания атрибута disabled массиву
+var blockSelect = function (array) {
+  for (var j = 0; j < array.length; j++) {
+    array[j].disabled = true; // блокировка полей создания объявления
+  }
+};
 
+// создаем функцию для удаления атрибута disabled массиву
+var unblockSelect = function (array) {
+  for (var j = 0; j < array.length; j++) {
+    array[j].disabled = false; // разблокировка полей создания объявления
+  }
+};
+
+// создаем функцию, которая делает доступными элементы страницы при её активации
 var activeMode = function () {
   dom.mapElement.classList.remove('map--faded'); // активация карты
-  dom.inputAddress.placeholder = 'left: ' + parseInt(PIN_X0 + PIN_SIZE_X * 0.5) + 'px;' + ' top: ' + parseInt(PIN_Y0 + PIN_SIZE_X) + 'px;'; // координаты метки после активации карты
+  dom.inputAddress.placeholder = pin.pinActiveMode(); // координаты метки после активации карты
   dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
-  dom.adFormElement.querySelectorAll('fieldset').forEach(el => el.disabled = false); // активация полей создания объявления
-  dom.filterContainerElement.querySelectorAll('select').forEach(el => el.disabled = false); // активация полей фильтра объявлений
-  dom.filterContainerElement.querySelector('fieldset').disabled = false; // активация полей фильтра объявлений
+  unblockSelect(dom.fieldsetForm); // разблокировка масиива полей создания объявления
+  unblockSelect(dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
+  dom.fieldsetFilter.disabled = false; // разблокировка полей фильтра объявлений
 };
 
 // переход в активное состояние при нажатии на метку
-dom.activeMode.addEventListener('mousedown', function () {
+dom.pinElem.addEventListener('mousedown', function () {
   activeMode();
 });
-// переход в активное состояние при нажатии ESC
-dom.activeMode.addEventListener('keydown', function (evt) {
+
+// переход в активное состояние при нажатии на Enter
+dom.pinElem.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     activeMode();
   }
 });
 
-// создаем обработчик события на изменения select и синхронизируем варинаты выбора кол-ва комнат и гостей
-roomsNumber.addEventListener('change', function () {
+// создаем функцию для присваивания атрибута disabled элементам массива
+var disableElemException = function (array, exceptionArr) {
+  array.forEach(function (elem, index) {
+    if (exceptionArr.indexOf(index) > -1) {
+      elem.disabled = false;
+    } else {
+      elem.disabled = true;
+    }
+  });
+};
+
+// создаем обработчик события на изменения select в форме и синхронизируем варианты выбора кол-ва комнат и гостей
+roomsNumber.addEventListener('change', function (evt) {
   var valueOpt = roomsNumber.value;
-  if (valueOpt == 1) {
-    guestsNumber.children[0].disabled = true;
-    guestsNumber.children[1].disabled = true;
-    guestsNumber.children[2].disabled = false;
-    guestsNumber.children[3].disabled = true;
-  } else if (valueOpt == 2) {
-    guestsNumber.children[0].disabled = true;
-    guestsNumber.children[1].disabled = false;
-    guestsNumber.children[2].disabled = false;
-    guestsNumber.children[3].disabled = true;
-  } else if (valueOpt == 3) {
-    guestsNumber.children[0].disabled = false;
-    guestsNumber.children[1].disabled = false;
-    guestsNumber.children[2].disabled = false;
-    guestsNumber.children[3].disabled = true;
-  } else if (valueOpt == 100) {
-    guestsNumber.children[0].disabled = true;
-    guestsNumber.children[1].disabled = true;
-    guestsNumber.children[2].disabled = true;
-    guestsNumber.children[3].disabled = false;
+  if (valueOpt === '1') {
+    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]);
+    roomsNumber.setCustomValidity('Все правильно'); // !!! <- не показывается резульат валидации
+  } else if (valueOpt === '2') {
+    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [1, 2]);
+  } else if (valueOpt === '3') {
+    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [0, 1, 2]);
+  } else if (valueOpt === '100') {
+    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [3]);
+  } else {
+    evt.target.setCustomValidity('');
   }
 });
 
-// начальное состояние  select для количества гостей
-guestsNumber.children[0].disabled = true;
-guestsNumber.children[1].disabled = true;
-guestsNumber.children[2].disabled = false;
-guestsNumber.children[3].disabled = true;
+// создаем функцию для генерации начальных значений
+var init = function () {
+  dom.similarPins.appendChild(fragment);
+  dom.inputAddress.placeholder = pin.pinNoActiveMode(); // начальные координаты метки
+  blockSelect(dom.fieldsetForm); // блокировка масиива полей создания объявления
+  blockSelect(dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
+  dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
+  disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]); // начальное состояние select для количества гостей
+};
+init();
