@@ -1,6 +1,6 @@
 'use strict';
 
-var numberOfObj = 8;
+var NUMBER_OF_OBJ = 8;
 var ENTER_KEYCODE = 13;
 
 var ad = {
@@ -23,12 +23,12 @@ var ad = {
     photos: ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']
   },
   location: {
-    x: function getRandomlocationY() {
+    x: function () {
       var min = 0;
       var max = 1150;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-    y: function getRandomlocationX() {
+    y: function () {
       var min = 130;
       var max = 630;
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -52,17 +52,17 @@ var dom = {
 };
 
 var pin = {
-  pinTop: window.getComputedStyle(dom.pinElem, null).getPropertyValue('top'), // 375px
-  pinLeft: window.getComputedStyle(dom.pinElem, null).getPropertyValue('left'), // 570px
-  pinHeightMuffin: window.getComputedStyle(dom.muffinElem, null).getPropertyValue('height'), // 44px
-  pinWidthMuffin: window.getComputedStyle(dom.muffinElem, null).getPropertyValue('width'), // 40px
+  pinTop: window.getComputedStyle(dom.pinElem, null).top, // 375px
+  pinLeft: window.getComputedStyle(dom.pinElem, null).left, // 570px
+  pinHeightMuffin: window.getComputedStyle(dom.muffinElem, null).height, // 44px
+  pinWidthMuffin: window.getComputedStyle(dom.muffinElem, null).width, // 40px
   pinHeight: window.getComputedStyle(dom.pinElem, ':after').height, // 70px !!! <- не правильно показывает значение
   pinWidth: window.getComputedStyle(dom.pinElem, ':after').width, // 50px !!! <- не правильно показывает значение
-  pinActiveMode: function getPinActiveValue() {
+  pinActiveMode: function () {
     var pinValueXY = (parseInt(pin.pinTop, 10) + 0.5 * parseInt(pin.pinHeightMuffin, 10)) + 'px; ' + (parseInt(pin.pinLeft, 10) + 0.5 * parseInt(pin.pinWidthMuffin, 10)) + 'px;';
     return pinValueXY;
   },
-  pinNoActiveMode: function getPinNoActiveValue() {
+  pinNoActiveMode: function () {
     var pinValueXY = (parseInt(pin.pinTop, 10) + parseInt(pin.pinHeight, 10)) + 'px; ' + (parseInt(pin.pinLeft, 10) + 0.5 * parseInt(pin.pinWidth, 10)) + 'px;';
     return pinValueXY;
   }
@@ -83,14 +83,13 @@ var getRandomElement = function () {
 
 // создаем функцию для генерации объекта со случайными значениями
 var createRandomObj = function () {
-  var mainObj = {}; // создаем пустой объект для записи значений
-  var author = {};
-  var offer = {};
-  var location = {};
+  var mainObj = {}; // создаем пустой объект для записи в него объектов: author, offer, location
+  var author = {}; // -//-
+  var offer = {}; // -//-
+  var location = {}; // -//-
   var locationX = ad.location.x();
   var locationY = ad.location.y();
-  var randomElementArr = getRandomElement();
-  author.avatar = randomElementArr;
+  author.avatar = getRandomElement();
   offer.title = ad.offer.title;
   offer.address = 'left: ' + locationX + 'px;' + ' top: ' + locationY + 'px;';
   offer.price = ad.offer.price;
@@ -102,25 +101,24 @@ var createRandomObj = function () {
   offer.features = ad.offer.features;
   offer.description = ad.offer.description;
   offer.photos = ad.offer.photos;
-  location.x = ad.location.x;
-  location.y = ad.location.y;
+  location.x = locationX;
+  location.y = locationY;
 
   mainObj.author = author;
   mainObj.offer = offer;
   mainObj.location = location;
-
   return mainObj;
 };
 
 // создаем функцию для записи сгенерированных N объектов в массив
 var createArrOfObj = function () {
   var arrOfObj = []; // создаем пустой массив для записи в него объектов
-  for (var i = 0; i < numberOfObj; i++) {
+  for (var i = 0; i < NUMBER_OF_OBJ; i++) {
     arrOfObj.push(createRandomObj());
   }
   return arrOfObj;
 };
-var randomArr = createArrOfObj(numberOfObj);
+var randomArr = createArrOfObj(NUMBER_OF_OBJ);
 
 // создаем функцию для отрисовки метки на карте
 var renderPin = function () {
@@ -133,7 +131,7 @@ var renderPin = function () {
 
 // создаем функцию для отрисовки N меток на карте
 var fragment = document.createDocumentFragment();
-for (var i = 0; i < 8; i++) {
+for (var i = 0; i < NUMBER_OF_OBJ; i++) {
   fragment.appendChild(renderPin());
 }
 
@@ -152,7 +150,7 @@ var unblockSelect = function (array) {
 };
 
 // создаем функцию, которая делает доступными элементы страницы при её активации
-var activeMode = function () {
+var toActiveMode = function () {
   dom.mapElement.classList.remove('map--faded'); // активация карты
   dom.inputAddress.placeholder = pin.pinActiveMode(); // координаты метки после активации карты
   dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
@@ -163,18 +161,18 @@ var activeMode = function () {
 
 // переход в активное состояние при нажатии на метку
 dom.pinElem.addEventListener('mousedown', function () {
-  activeMode();
+  toActiveMode();
 });
 
 // переход в активное состояние при нажатии на Enter
 dom.pinElem.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    activeMode();
+    toActiveMode();
   }
 });
 
 // создаем функцию для присваивания атрибута disabled элементам массива
-var disableElemException = function (array, exceptionArr) {
+var attachAttrDisabled = function (array, exceptionArr) {
   array.forEach(function (elem, index) {
     if (exceptionArr.indexOf(index) > -1) {
       elem.disabled = false;
@@ -188,14 +186,14 @@ var disableElemException = function (array, exceptionArr) {
 roomsNumber.addEventListener('change', function (evt) {
   var valueOpt = roomsNumber.value;
   if (valueOpt === '1') {
-    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]);
+    attachAttrDisabled([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]);
     roomsNumber.setCustomValidity('Все правильно'); // !!! <- не показывается резульат валидации
   } else if (valueOpt === '2') {
-    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [1, 2]);
+    attachAttrDisabled([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [1, 2]);
   } else if (valueOpt === '3') {
-    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [0, 1, 2]);
+    attachAttrDisabled([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [0, 1, 2]);
   } else if (valueOpt === '100') {
-    disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [3]);
+    attachAttrDisabled([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [3]);
   } else {
     evt.target.setCustomValidity('');
   }
@@ -208,6 +206,6 @@ var init = function () {
   blockSelect(dom.fieldsetForm); // блокировка масиива полей создания объявления
   blockSelect(dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
   dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
-  disableElemException([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]); // начальное состояние select для количества гостей
+  attachAttrDisabled([guestsNumber[0], guestsNumber[1], guestsNumber[2], guestsNumber[3]], [2]); // начальное состояние select для количества гостей
 };
 init();
