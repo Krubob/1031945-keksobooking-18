@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Vladislav Petrov](https://up.htmlacademy.ru/javascript/18/user/1031945).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Суглобов](https://htmlacademy.ru/profile/id1133747).
 
 ---
 
