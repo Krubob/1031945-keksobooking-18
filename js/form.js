@@ -2,6 +2,23 @@
 
 (function () {
 
+  window.pin = {
+    pinTop: window.getComputedStyle(window.dom.pinElem, null).top, // 375px
+    pinLeft: window.getComputedStyle(window.dom.pinElem, null).left, // 570px
+    pinHeightMuffin: window.getComputedStyle(window.dom.muffinElem, null).height, // 44px
+    pinWidthMuffin: window.getComputedStyle(window.dom.muffinElem, null).width, // 40px
+    pinHeight: window.getComputedStyle(window.dom.pinElem, ':after').height, // 70px !!! <- не правильно показывает значение
+    pinWidth: window.getComputedStyle(window.dom.pinElem, ':after').width, // 50px !!! <- не правильно показывает значение
+    pinActiveMode: function () {
+      var pinValueXY = (parseInt(window.pin.pinTop, 10) + 0.5 * parseInt(window.pin.pinHeightMuffin, 10)) + 'px; ' + (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidthMuffin, 10)) + 'px;';
+      return pinValueXY;
+    },
+    pinNoActiveMode: function () {
+      var pinValueXY = (parseInt(window.pin.pinTop, 10) + parseInt(window.pin.pinHeight, 10)) + 'px; ' + (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidth, 10)) + 'px;';
+      return pinValueXY;
+    }
+  };
+
   // создаем функцию для присваивания атрибута disabled массиву
   var blockSelect = function (array) {
     for (var j = 0; j < array.length; j++) {
@@ -24,6 +41,7 @@
     unblockSelect(window.dom.fieldsetForm); // разблокировка масиива полей создания объявления
     unblockSelect(window.dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
     window.dom.fieldsetFilter.disabled = false; // разблокировка полей фильтра объявлений
+    window.backend.load(window.successHandler, window.errorHandler);
   };
 
   // переход в активное состояние при нажатии на метку
@@ -73,6 +91,8 @@
     blockSelect(window.dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
     window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
     attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
+    window.guestsNumber = window.dom.guestsNumberSelect;
+    window.roomsNumber = window.dom.roomsNumberSelect;
   };
   init();
 })();
