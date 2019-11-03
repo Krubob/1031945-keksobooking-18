@@ -18,7 +18,8 @@
     fieldsetFilter: document.querySelector('.map__filters-container').querySelector('fieldset'),
     inputAddress: document.querySelector('#address'),
     roomsNumberSelect: document.querySelector('#room_number'),
-    guestsNumberSelect: document.querySelector('#capacity')
+    guestsNumberSelect: document.querySelector('#capacity'),
+    housingType: document.querySelector('#housing-type')
   };
 
 })();

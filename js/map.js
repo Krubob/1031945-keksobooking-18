@@ -2,8 +2,10 @@
 
 (function () {
 
+  window.pinsArr = [];
+
   // создаем функцию для отрисовки параметров пинов
-  var renderPin = function (pins) {
+  window.renderPin = function (pins) {
     var pinElement = window.dom.similarPinTemplate.cloneNode(true);
     var locationX = pins.location.x;
     var locationY = pins.location.y;
@@ -13,13 +15,21 @@
     return pinElement;
   };
 
-  // добавляем обработчик успешной загрузки в отдельную переменную и вставляем параметры пинов
-  window.successHandler = function (pins) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < pins.length - 1; i++) {
-      fragment.appendChild(renderPin(pins[i]));
-    }
-    window.dom.similarPins.appendChild(fragment);
+  window.updatePins = function () {
+    window.pinsArr.filter(function () {
+      // запишем алгоритм фильтрации в теле функции
+      window.fragment = document.createDocumentFragment();
+      for (var i = 0; i < 5; i++) {
+        window.fragment.appendChild(window.renderPin(window.pinsArr[i]));
+      }
+    });
+    window.dom.similarPins.appendChild(window.fragment);
+  };
+
+  // добавляем обработчик успешной загрузки в отдельную переменную и отрисовываем пины на карте
+  window.successHandler = function (data) {
+    window.pinsArr = data;
+    window.updatePins();
   };
 
   // добавляем обработчик ошибки в отдельную переменную и отрисовываем сообщение об ошибке в dom-элемент

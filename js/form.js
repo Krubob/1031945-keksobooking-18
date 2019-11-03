@@ -67,6 +67,18 @@
     });
   };
 
+  // создаем функцию для генерации начальных значений
+  var init = function () {
+    window.dom.inputAddress.placeholder = window.pin.pinNoActiveMode(); // начальные координаты метки
+    blockSelect(window.dom.fieldsetForm); // блокировка масиива полей создания объявления
+    blockSelect(window.dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
+    window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
+    window.guestsNumber = window.dom.guestsNumberSelect;
+    window.roomsNumber = window.dom.roomsNumberSelect;
+    attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
+  };
+  init();
+
   // создаем обработчик события на изменения select в форме и синхронизируем варианты выбора кол-ва комнат и гостей
   window.roomsNumber.addEventListener('change', function (evt) {
     var valueOpt = window.roomsNumber.value;
@@ -84,15 +96,25 @@
     }
   });
 
-  // создаем функцию для генерации начальных значений
-  var init = function () {
-    window.dom.inputAddress.placeholder = window.pin.pinNoActiveMode(); // начальные координаты метки
-    blockSelect(window.dom.fieldsetForm); // блокировка масиива полей создания объявления
-    blockSelect(window.dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
-    window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
-    attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
-    window.guestsNumber = window.dom.guestsNumberSelect;
-    window.roomsNumber = window.dom.roomsNumberSelect;
-  };
-  init();
+  // window.updateTypeOfHouse = function (index) {
+
+  // };
+
+  window.dom.housingType.addEventListener('change', function () {
+    var valueOpt = window.dom.housingType.value;
+    if (valueOpt === 'flat') {
+      // document.querySelector('.map__pins').querySelector('.map__pin').remove();
+      // window.pinsArr.splice(0, 5);
+      console.log(window.pinsArr);
+      window.dom.similarPins.querySelector('.map__pin').cloneNode(false).remove();
+      window.pinsArr.filter(function (item, index, array) {
+        if (item.offer.type === 'flat') {
+          console.log(index);
+          window.dom.similarPins.appendChild(window.renderPin(window.pinsArr[index]));
+        }
+      });
+    }
+  });
+
+
 })();
