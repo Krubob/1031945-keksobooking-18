@@ -8,6 +8,8 @@
   window.dom = {
     mapElement: document.querySelector('.map'),
     similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
+    similarCardTemplate: document.querySelector('#card').content.querySelector('.map__card'),
+    mapFiltersContainer: document.querySelector('.map__filters-container'),
     errorWindow: document.querySelector('#error').content.querySelector('.error'),
     similarPins: document.querySelector('.map').querySelector('.map__pins'),
     pinElem: document.querySelector('.map__pin--main'),

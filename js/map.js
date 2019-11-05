@@ -13,13 +13,49 @@
     return pinElement;
   };
 
+  var renderCard = function (pins) {
+    var cardElement = window.dom.similarCardTemplate.cloneNode(true);
+
+    cardElement.querySelector('.popup__title').innerHTML = pins.offer.title;
+    cardElement.querySelector('.popup__text--address').innerHTML = pins.offer.address;
+    cardElement.querySelector('.popup__text--price').innerHTML = pins.offer.price + '₽/ночь';
+    if (pins.offer.type === 'flat') {
+      cardElement.querySelector('.popup__type').innerHTML = 'Квартира';
+    } else if (pins.offer.type === 'bungalo') {
+      cardElement.querySelector('.popup__type').innerHTML = 'Бунгало';
+    } else if (pins.offer.type === 'house') {
+      cardElement.querySelector('.popup__type').innerHTML = 'Дом';
+    } else if (pins.offer.type === 'palace') {
+      cardElement.querySelector('.popup__type').innerHTML = 'Дворец';
+    }
+    cardElement.querySelector('.popup__text--capacity').innerHTML = pins.offer.rooms + ' комната для' + ' ' + pins.offer.guests + ' гостей';
+    cardElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + pins.offer.checkin + ', выезд до ' + pins.offer.checkout;
+    cardElement.querySelector('.popup__feature').innerHTML = pins.offer.features;
+
+    cardElement.querySelector('.popup__description').innerHTML = pins.offer.description;
+
+    // алгоритм добавления в дом дерево фотографий
+    // for (var k = 0; k < pins.offer.photos.length; k++) {
+    //   var img = document.createElement('img');
+    //   window.dom.mapFiltersContainer.before(img);
+    // }
+
+    cardElement.querySelector('.popup__avatar').src = pins.author.avatar;
+
+    return cardElement;
+  };
+  console.log(document.querySelector('.map'));
+
   // добавляем обработчик успешной загрузки в отдельную переменную и вставляем параметры пинов
   window.successHandler = function (pins) {
     var fragment = document.createDocumentFragment();
+    var fragmentExtr = document.createDocumentFragment();
     for (var i = 0; i < pins.length - 1; i++) {
       fragment.appendChild(renderPin(pins[i]));
+      fragment.appendChild(renderCard(pins[i]));
     }
     window.dom.similarPins.appendChild(fragment);
+    window.dom.mapFiltersContainer.before(fragmentExtr);
   };
 
   // добавляем обработчик ошибки в отдельную переменную и отрисовываем сообщение об ошибке в dom-элемент
@@ -27,5 +63,7 @@
     var error = window.dom.errorWindow;
     window.dom.mapElement.appendChild(error);
   };
+
+  window.backend.load(window.successHandler, window.errorHandler);
 
 })();
