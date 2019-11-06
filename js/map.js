@@ -64,6 +64,5 @@
     window.dom.mapElement.appendChild(error);
   };
 
-  window.backend.load(window.successHandler, window.errorHandler);
 
 })();
