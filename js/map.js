@@ -34,17 +34,23 @@
 
     cardElement.querySelector('.popup__description').innerHTML = pins.offer.description;
 
-    // алгоритм добавления в дом дерево фотографий
-    // for (var k = 0; k < pins.offer.photos.length; k++) {
-    //   var img = document.createElement('img');
-    //   window.dom.mapFiltersContainer.before(img);
-    // }
-
     cardElement.querySelector('.popup__avatar').src = pins.author.avatar;
 
+    var createPhoto = function () {
+      for (var k = 0; k < pins.offer.photos.length; k++) {
+        var photoElement = window.dom.similarCardTemplate.querySelector('.popup__photo').cloneNode(true);
+
+        cardElement.querySelector('.popup__photos').append(photoElement);
+        cardElement.querySelector('.popup__photos').querySelectorAll('img')[k].src = pins.offer.photos[k];
+      }
+      cardElement.querySelector('.popup__photos').removeChild(cardElement.querySelector('.popup__photos').lastChild);
+      return photoElement;
+    };
+    createPhoto();
+    // console.log(cardElement);
     return cardElement;
   };
-  console.log(document.querySelector('.map'));
+
 
   // добавляем обработчик успешной загрузки в отдельную переменную и вставляем параметры пинов
   window.successHandler = function (pins) {
@@ -57,6 +63,8 @@
     window.dom.similarPins.appendChild(fragment);
     window.dom.mapFiltersContainer.before(fragmentExtr);
   };
+
+  // console.log(document.querySelector('.map'));
 
   // добавляем обработчик ошибки в отдельную переменную и отрисовываем сообщение об ошибке в dom-элемент
   window.errorHandler = function () {
