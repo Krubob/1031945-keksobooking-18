@@ -80,11 +80,11 @@
   init();
 
   // создаем обработчик события на изменения select в форме и синхронизируем варианты выбора кол-ва комнат и гостей
-  window.roomsNumber.addEventListener('change', function (evt) {
+  window.roomsNumber.addEventListener('change', function () {
     var valueOpt = window.roomsNumber.value;
     if (valueOpt === '1') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]);
-      window.roomsNumber.setCustomValidity('Все правильно'); // !!! <- не показывается резульат валидации
+      // window.roomsNumber.setCustomValidity('Все правильно');
     } else if (valueOpt === '2') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [1, 2]);
     } else if (valueOpt === '3') {
@@ -92,7 +92,7 @@
     } else if (valueOpt === '100') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [3]);
     } else {
-      evt.target.setCustomValidity('');
+      window.roomsNumber.setCustomValidity('');
     }
   });
 
