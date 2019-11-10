@@ -9,12 +9,12 @@
     pinWidthMuffin: window.getComputedStyle(window.dom.muffinElem, null).width, // 40px
     pinHeight: window.getComputedStyle(window.dom.pinElem, ':after').height, // 70px !!! <- не правильно показывает значение
     pinWidth: window.getComputedStyle(window.dom.pinElem, ':after').width, // 50px !!! <- не правильно показывает значение
-    pinActiveMode: function () {
-      var pinValueXY = (parseInt(window.pin.pinTop, 10) + 0.5 * parseInt(window.pin.pinHeightMuffin, 10)) + 'px; ' + (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidthMuffin, 10)) + 'px;';
+    pinNoActiveMode: function () {
+      var pinValueXY = (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidth, 10)) + 'px; ' + (parseInt(window.pin.pinTop, 10) + parseInt(window.pin.pinHeight, 10)) + 'px;';
       return pinValueXY;
     },
-    pinNoActiveMode: function () {
-      var pinValueXY = (parseInt(window.pin.pinTop, 10) + parseInt(window.pin.pinHeight, 10)) + 'px; ' + (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidth, 10)) + 'px;';
+    pinActiveMode: function () {
+      var pinValueXY = (parseInt(window.pin.pinTop, 10) + 0.5 * parseInt(window.pin.pinHeightMuffin, 10)) + 'px; ' + (parseInt(window.pin.pinLeft, 10) + 0.5 * parseInt(window.pin.pinWidthMuffin, 10)) + 'px;';
       return pinValueXY;
     }
   };
@@ -34,10 +34,10 @@
   };
 
   // создаем функцию, которая делает доступными элементы страницы при её активации
-  var toActiveMode = function () {
+  window.toActiveMode = function () {
     window.dom.mapElement.classList.remove('map--faded'); // активация карты
-    window.dom.inputAddress.placeholder = window.pin.pinActiveMode(); // координаты метки после активации карты
-    window.dom.inputAddress.value = window.pin.pinActiveMode(); // координаты метки после активации карты
+    // window.dom.inputAddress.placeholder = window.pin.pinActiveMode(); // координаты метки после активации карты
+    // window.dom.inputAddress.value = window.pin.pinActiveMode(); // координаты метки после активации карты
     window.dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
     unblockSelect(window.dom.fieldsetForm); // разблокировка масиива полей создания объявления
     unblockSelect(window.dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
@@ -46,15 +46,13 @@
   };
 
   // переход в активное состояние при нажатии на метку
-  window.dom.pinElem.addEventListener('mousedown', function () {
-    toActiveMode();
-  });
-
+  window.dom.pinElem.addEventListener('mousedown', window.toActiveMode);
+  // window.dom.pinElem.removeEventListener('mousedown', window.toActiveMode);
 
   // переход в активное состояние при нажатии на Enter
   window.dom.pinElem.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.ENTER_KEYCODE) {
-      toActiveMode();
+      window.toActiveMode();
     }
   });
 
