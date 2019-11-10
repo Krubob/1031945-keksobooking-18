@@ -49,7 +49,6 @@
     createPhoto();
 
     cardElement.classList.add('hidden'); // по умолчанию все объявления скрыты
-
     return cardElement;
   };
 
@@ -65,69 +64,97 @@
 
     window.dom.similarPins.appendChild(fragment);
     window.dom.mapFiltersContainer.before(fragmentExtr);
-    addValueIndex();
 
-    var psevdoAray = document.querySelectorAll('.map__card'); // записываем все dom-элементы в псевдомассив
-    window.arrayCards = Array.from(psevdoAray); // преобразуем в массив
+    addValueIndex();
+    toCloseCard();
+    toOpenCard();
+    getCard();
   };
 
   // создаем функцию для добавляения каждому пину аттрибута value
   // и присваиваем ему порядковый номер index
   var addValueIndex = function () {
-    var psevdoAray = document.querySelectorAll('.map__pin'); // записываем все dom-элементы в псевдомассив
-    window.arrayPins = Array.from(psevdoAray); // преобразуем в массив
-
-    window.arrayPins.splice(0, 1); // убираем первый элемент массива, который соответствует перетаскиваемой метке, а не пину
-
-    window.arrayPins.forEach(function (elem, index) {
+    var arrayPins = document.querySelectorAll('.map__pin'); // записываем все dom-элементы в псевдомассив
+    arrayPins.forEach(function (elem, index) {
       elem.value = index;
     });
+  };
 
-    // добавляем обработчик события, который по клику на пин вызывает соответств. объявление
+  // var closePopups = function () {
+  //   var arrayPopups = document.querySelectorAll('.map__card'); // записываем все dom-элементы в псевдомассив
+  //   arrayPopups.forEach(function (elem) {
+  //     elem.classList.add('hidden');
+  //   });
+  // };
+
+  // создаем функцию, которая добавляет синхронизацию клика по пину и открытия нужного объявления
+  var getCard = function () {
     document.querySelector('.map__pins').addEventListener('click', function (evt) {
       var target = evt.target;
       var button = target.closest('button');
       var valuePin = button.value;
-      if (valuePin === '0') {
+      if (valuePin === '1') {
         document.querySelectorAll('.map__card')[0].classList.remove('hidden');
-      } else if (valuePin === '1') {
-        document.querySelectorAll('.map__card')[1].classList.remove('hidden');
+        // closePopups();
       } else if (valuePin === '2') {
-        document.querySelectorAll('.map__card')[2].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[1].classList.remove('hidden');
       } else if (valuePin === '3') {
-        document.querySelectorAll('.map__card')[3].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[2].classList.remove('hidden');
       } else if (valuePin === '4') {
-        document.querySelectorAll('.map__card')[4].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[3].classList.remove('hidden');
       } else if (valuePin === '5') {
-        document.querySelectorAll('.map__card')[5].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[4].classList.remove('hidden');
       } else if (valuePin === '6') {
-        document.querySelectorAll('.map__card')[6].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[5].classList.remove('hidden');
       } else if (valuePin === '7') {
-        document.querySelectorAll('.map__card')[7].classList.remove('hidden');
+        document.querySelectorAll('.map__card')[6].classList.remove('hidden');
       } else if (valuePin === '8') {
+        document.querySelectorAll('.map__card')[7].classList.remove('hidden');
+      } else if (valuePin === '9') {
         document.querySelectorAll('.map__card')[8].classList.remove('hidden');
-      } else if (target.value !== 'button') {
-        return;
-      } else if (button.classList.contains('map__pin--main')) {
-        console.log('elem find');
-        evt.stopPropagation();
-        // evt.preventDefault();
       }
       console.log(button);
     });
   };
 
-  // window.arrayCards.forEach(function (index) {
-  //   document.querySelectorAll('.popup__close').addEventListener('click', function () {
-  //     document.querySelectorAll('.map__card')[index].classList.add('hidden');
-  //   });
-  // });
+  // создаем функцию для открытия объявления по нажатию enter на пин
+  var toOpenCard = function () {
+    window.pins = document.querySelector('.map__pins').querySelectorAll('.map__pin');
+    window.pins.forEach(function (element) {
+      element.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === window.ENTER_KEYCODE) {
+          element.classList.remove('hidden');
+          console.log('Button pin clicked');
+        }
+      });
+    });
+  };
 
-  // document.querySelectorAll('.popup__close').addEventListener('keydown', function (evt) {
-  //   if (evt.keyCode === window.ENTER_KEYCODE) {
+  // создаем функцию для закрытия объявления
+  var toCloseCard = function () {
+    var cards = document.querySelector('.map__pins').querySelectorAll('.map__card');
+    cards.forEach(function (element) {
 
-  //   }
-  // });
+      element.querySelector('.popup__close').addEventListener('click', function () {
+        element.classList.add('hidden');
+        console.log('Сlose button clicked');
+      });
+
+      element.querySelector('.popup__close').addEventListener('keydown', function (evt) {
+        if (evt.keyCode === window.ENTER_KEYCODE) {
+          element.querySelector('.map__card').add('hidden');
+          console.log('Enter button clicked');
+        }
+      });
+
+      document.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === window.ESC_KEYCODE) {
+          element.classList.add('hidden');
+          console.log('Esc button clicked');
+        }
+      });
+    });
+  };
 
   // добавляем обработчик ошибки в отдельную переменную и отрисовываем сообщение об ошибке в dom-элемент
   window.errorHandler = function () {
