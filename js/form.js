@@ -37,6 +37,7 @@
   var toActiveMode = function () {
     window.dom.mapElement.classList.remove('map--faded'); // активация карты
     window.dom.inputAddress.placeholder = window.pin.pinActiveMode(); // координаты метки после активации карты
+    window.dom.inputAddress.value = window.pin.pinActiveMode(); // координаты метки после активации карты
     window.dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
     unblockSelect(window.dom.fieldsetForm); // разблокировка масиива полей создания объявления
     unblockSelect(window.dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
@@ -48,6 +49,7 @@
   window.dom.pinElem.addEventListener('mousedown', function () {
     toActiveMode();
   });
+
 
   // переход в активное состояние при нажатии на Enter
   window.dom.pinElem.addEventListener('keydown', function (evt) {
@@ -75,16 +77,21 @@
     window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
     window.guestsNumber = window.dom.guestsNumberSelect;
     window.roomsNumber = window.dom.roomsNumberSelect;
+    window.houseType = window.dom.houseTypeSelect;
+    window.timein = window.dom.timeinSelect;
+    window.timeout = window.dom.timeoutSelect;
     attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
+    attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [0]);
+    window.guestsNumber[2].selected = true;
+    window.dom.housePrice.placeholder = '1000';
   };
   init();
 
   // создаем обработчик события на изменения select в форме и синхронизируем варианты выбора кол-ва комнат и гостей
-  window.roomsNumber.addEventListener('change', function (evt) {
+  window.roomsNumber.addEventListener('change', function () {
     var valueOpt = window.roomsNumber.value;
     if (valueOpt === '1') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]);
-      window.roomsNumber.setCustomValidity('Все правильно'); // !!! <- не показывается резульат валидации
     } else if (valueOpt === '2') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [1, 2]);
     } else if (valueOpt === '3') {
@@ -92,8 +99,48 @@
     } else if (valueOpt === '100') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [3]);
     } else {
-      evt.target.setCustomValidity('');
+      window.roomsNumber.setCustomValidity('');
     }
+  });
+
+  // -//- синхронизируем варианты выбора типа жилья и его стоимости
+  window.houseType.addEventListener('change', function () {
+    var valueOpt = window.houseType.value;
+    if (valueOpt === 'bungalo') {
+      window.dom.housePrice.min = '0';
+      window.dom.housePrice.placeholder = '0';
+    } else if (valueOpt === 'flat') {
+      window.dom.housePrice.min = '1000';
+      window.dom.housePrice.placeholder = '1000';
+    } else if (valueOpt === 'house') {
+      window.dom.housePrice.min = '5000';
+      window.dom.housePrice.placeholder = '5000';
+    } else if (valueOpt === 'palace') {
+      window.dom.housePrice.min = '10000';
+      window.dom.housePrice.placeholder = '10000';
+    } else {
+      window.houseType.setCustomValidity('');
+    }
+  });
+
+  // -//- синхронизируем варианты выбора времени заезда и выезда
+  window.timein.addEventListener('change', function () {
+    var valueOpt = window.timein.value;
+    if (valueOpt === '12:00') {
+      attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [0]);
+    } else if (valueOpt === '13:00') {
+      attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [1]);
+    } else if (valueOpt === '14:00') {
+      attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [2]);
+    } else {
+      window.timein.setCustomValidity('');
+    }
+  });
+
+  // вывод сообщения об успешной отправки
+  window.dom.submitForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.dom.mapElement.appendChild(window.dom.successWindow);
   });
 
 })();
