@@ -89,6 +89,7 @@
 
   // создаем функцию, которая добавляет синхронизацию клика по пину и открытия нужного объявления
   var getCard = function () {
+    window.dom.pinElem.removeEventListener('mousedown', window.toActiveMode);
     document.querySelector('.map__pins').addEventListener('click', function (evt) {
       var target = evt.target;
       var button = target.closest('button');
