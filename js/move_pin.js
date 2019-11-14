@@ -6,28 +6,30 @@
   window.pinCoordinates = {
     pinTop: window.dom.pinElem.offsetTop, // 375px координаты по вертикали верхней левой точки метки
     pinLeft: window.dom.pinElem.offsetLeft, // 570px координаты по горизонтали верхней левой точки
-    pinHeightMuffin: window.getComputedStyle(window.dom.muffinElem, null).height, // 44px высота круглой метки
-    pinWidthMuffin: window.getComputedStyle(window.dom.muffinElem, null).width, // 40px ширина круглой метки
-    pinHeight: window.getComputedStyle(window.dom.pinElem, ':after').height, // 22px высота острого конца метки
-    pinWidth: window.getComputedStyle(window.dom.pinElem, ':after').width, // 10px ширина острого конца метки
+    pinComputedStyle: window.getComputedStyle(window.dom.pinElem, null), // 44px высота круглой метки, 40px ширина круглой метки
+    endOfPinComputedStyle: window.getComputedStyle(window.dom.pinElem, ':after'), // 22px высота острого конца метки, 10px ширина острого конца метки
     pinNoActiveModeX: function () { // до активации в поле адрес записываем координаты центра метки
-      var pinValueXY = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.pinWidthMuffin, 10));
-      return pinValueXY;
+      var pinValueX = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.pinComputedStyle.height, 10));
+      return pinValueX;
     },
     pinNoActiveModeY: function () { // до активации в поле адрес записываем координаты центра метки
-      var pinValueXY = (window.dom.pinElem.offsetTop + 0.5 * parseInt(window.pinCoordinates.pinHeightMuffin, 10));
-      return pinValueXY;
+      var pinValueY = (window.dom.pinElem.offsetTop + 0.5 * parseInt(window.pinCoordinates.pinComputedStyle.height, 10));
+      return pinValueY;
     },
     pinActiveModeX: function () { // после активации в поле адрес записываем координаты острого конца метки
-      var pinValueXY = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.pinWidthMuffin, 10));
-      return pinValueXY;
+      var pinValueX = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.endOfPinComputedStyle.width, 10));
+      return pinValueX;
     },
     pinActiveModeY: function () { // после активации в поле адрес записываем координаты острого конца метки
-      var pinValueXY = (window.dom.pinElem.offsetTop + parseInt(window.pinCoordinates.pinHeightMuffin, 10) + parseInt(window.pinCoordinates.pinHeight, 10));
-      return pinValueXY;
+      var pinValueY = (window.dom.pinElem.offsetTop + parseInt(window.pinCoordinates.pinComputedStyle.height, 10) + parseInt(window.pinCoordinates.endOfPinComputedStyle.height, 10));
+      return pinValueY;
     }
   };
+  // console.log(window.dom.pinElem.style.top);
+  // console.log(window.dom.pinElem.style.left);
 
+  var pinWidthMuffinComputedStyle = window.getComputedStyle(window.dom.pinElem, null);
+  console.log(pinWidthMuffinComputedStyle.width);
   // добавим обработчик события mousedown - начала перемещения пина
   window.dom.pinElem.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -36,6 +38,10 @@
       x: evt.clientX,
       y: evt.clientY
     };
+
+    // var mapWidth = window.getComputedStyle(document.querySelector('.map'), null).width; // 1200px
+    // console.log(mapWidth);
+
     var dragged = false;
     // при каждом движении мыши необходимо обновлять смещение относительно первоначальной точки
     var onMouseMove = function (moveEvt) {
@@ -51,39 +57,34 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-      // записываем координаты острого конца метки в поле атрибут style
-      window.dom.pinElem.style.top = (window.dom.pinElem.offsetTop - shift.y) + 'px';
-      window.dom.pinElem.style.left = (window.dom.pinElem.offsetLeft - shift.x) + 'px';
-      // записываем координаты острого конца метки в поле адреса и плейсхолдер
-      window.dom.inputAddress.placeholder = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      window.dom.inputAddress.value = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
+
+      // добавляем ограничения на перемещение пина
+      if (window.dom.pinElem.style.top <= '130') {
+        window.dom.pinElem.style.top = 130 + 'px';
+      } else if (window.dom.pinElem.style.top >= '630') {
+        window.dom.pinElem.style.top = 630 + 'px';
+      }
+      // if (window.dom.pinElem.style.left >= '1170') {
+      //   window.dom.pinElem.style.left = 1170 + 'px';
+      // } else if (window.dom.pinElem.style.left <= '-32') {
+      //   window.dom.pinElem.style.left = -32 + 'px';
+      // }
 
       console.log(window.dom.pinElem.style.top);
       console.log(window.dom.pinElem.style.left);
 
-      if (window.dom.pinElem.style.top >= '630') {
-        window.dom.pinElem.style.top = (1260 - window.dom.pinElem.offsetTop - shift.y) + 'px';
-        window.dom.pinElem.style.left = (window.dom.pinElem.offsetLeft - shift.x) + 'px';
-        window.dom.inputAddress.placeholder = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-        window.dom.inputAddress.value = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      } else if (window.dom.pinElem.style.top <= '130') {
-        window.dom.pinElem.style.top = (260 - window.dom.pinElem.offsetTop - shift.y) + 'px';
-        window.dom.pinElem.style.left = (window.dom.pinElem.offsetLeft - shift.x) + 'px';
-        window.dom.inputAddress.placeholder = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-        window.dom.inputAddress.value = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      // } else if (window.dom.pinElem.style.left <= '0') {
-      //   window.dom.pinElem.style.top = (window.dom.pinElem.offsetLeft + shift.y) + 'px';
-      //   window.dom.pinElem.style.left = (0 - window.dom.pinElem.offsetLeft - shift.x) + 'px';
-      //   window.dom.inputAddress.placeholder = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      //   window.dom.inputAddress.value = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      // } else if (window.dom.pinElem.style.left >= '1170') {
-      //   window.dom.pinElem.style.top = (window.dom.pinElem.offsetLeft + shift.y) + 'px';
-      //   window.dom.pinElem.style.left = (2340 - window.dom.pinElem.offsetLeft - shift.x) + 'px';
-      //   window.dom.inputAddress.placeholder = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      //   window.dom.inputAddress.value = window.dom.pinElem.style.left + ' ' + window.dom.pinElem.style.top;
-      // }
-      }
+      var pinLeft = window.dom.pinElem.offsetLeft - shift.x;
+      var pinTop = window.dom.pinElem.offsetTop - shift.y;
+
+      // записываем координаты острого конца метки в поле атрибут style
+      window.dom.pinElem.style.left = pinLeft + 'px';
+      window.dom.pinElem.style.top = pinTop + 'px';
+
+      // записываем координаты острого конца метки в поле адреса и плейсхолдер
+      window.dom.inputAddress.placeholder = pinLeft + ' ' + pinTop;
+      window.dom.inputAddress.value = pinLeft + ' ' + pinTop;
     };
+
     // при отпускании кнопки мыши необходимо переставать слушать события движения мыши
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
@@ -92,7 +93,7 @@
       document.removeEventListener('mouseup', onMouseUp);
 
       if (dragged) {
-        var onClickPreventDefault = function (evt) {
+        var onClickPreventDefault = function () {
           evt.preventDefault();
           window.dom.pinElem.removeEventListener('click', onClickPreventDefault);
         };

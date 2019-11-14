@@ -71,21 +71,22 @@
     getCard();
   };
 
-  // создаем функцию для добавляения каждому пину аттрибута value
+  // создаем функцию для добавляения каждому пину атрибута value
   // и присваиваем ему порядковый номер index
   var addValueIndex = function () {
-    var arrayPins = document.querySelectorAll('.map__pin'); // записываем все dom-элементы в псевдомассив
-    arrayPins.forEach(function (elem, index) {
+    var pinsChosen = document.querySelector('.map__pins').querySelectorAll('.map__pin:not(.map__pin--main)');
+    pinsChosen.forEach(function (elem, index) {
       elem.value = index;
     });
   };
 
-  // var closePopups = function () {
-  //   var arrayPopups = document.querySelectorAll('.map__card'); // записываем все dom-элементы в псевдомассив
-  //   arrayPopups.forEach(function (elem) {
-  //     elem.classList.add('hidden');
-  //   });
-  // };
+  // создаем функцию для закрытия всех предудущих открытых окон
+  window.closePopups = function () {
+    var arrayPopups = document.querySelectorAll('.map__card'); // записываем все dom-элементы в псевдомассив
+    arrayPopups.forEach(function (elem) {
+      elem.classList.add('hidden');
+    });
+  };
 
   // создаем функцию, которая добавляет синхронизацию клика по пину и открытия нужного объявления
   var getCard = function () {
@@ -94,26 +95,9 @@
       var target = evt.target;
       var button = target.closest('button');
       var valuePin = button.value;
-      if (valuePin === '1') {
-        document.querySelectorAll('.map__card')[0].classList.remove('hidden');
-        // closePopups();
-      } else if (valuePin === '2') {
-        document.querySelectorAll('.map__card')[1].classList.remove('hidden');
-      } else if (valuePin === '3') {
-        document.querySelectorAll('.map__card')[2].classList.remove('hidden');
-      } else if (valuePin === '4') {
-        document.querySelectorAll('.map__card')[3].classList.remove('hidden');
-      } else if (valuePin === '5') {
-        document.querySelectorAll('.map__card')[4].classList.remove('hidden');
-      } else if (valuePin === '6') {
-        document.querySelectorAll('.map__card')[5].classList.remove('hidden');
-      } else if (valuePin === '7') {
-        document.querySelectorAll('.map__card')[6].classList.remove('hidden');
-      } else if (valuePin === '8') {
-        document.querySelectorAll('.map__card')[7].classList.remove('hidden');
-      } else if (valuePin === '9') {
-        document.querySelectorAll('.map__card')[8].classList.remove('hidden');
-      }
+      var mapCards = document.querySelectorAll('.map__card');
+      window.closePopups();
+      mapCards[valuePin].classList.remove('hidden');
       console.log(button);
     });
   };
@@ -143,12 +127,12 @@
 
       element.querySelector('.popup__close').addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.ENTER_KEYCODE) {
-          element.querySelector('.map__card').add('hidden');
+          element.querySelector('.map__card').classList.add('hidden');
           console.log('Enter button clicked');
         }
       });
 
-      document.addEventListener('keydown', function (evt) {
+      document.querySelector('.map').addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.ESC_KEYCODE) {
           element.classList.add('hidden');
           console.log('Esc button clicked');
@@ -161,6 +145,25 @@
   window.errorHandler = function () {
     var error = window.dom.errorWindow;
     window.dom.mapElement.appendChild(error);
+
+    window.dom.mapElement.querySelector('.error__button').addEventListener('click', function () {
+      window.dom.mapElement.querySelector('.error').classList.add('hidden');
+      // console.log('Сlose button clicked');
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      evt.preventDefault();
+      if (evt.keyCode === window.ESC_KEYCODE) {
+        window.dom.mapElement.querySelector('.error').classList.add('hidden');
+        // console.log('Esc button clicked');
+      }
+    });
+
+    // window.dom.mapElement.addEventListener('click', function (evt) {
+    //   evt.preventDefault();
+    //   window.dom.mapElement.querySelector('.error').classList.add('hidden');
+    //   // console.log('Window clicked');
+    // });
   };
 
 })();
