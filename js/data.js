@@ -8,6 +8,7 @@
 
   window.dom = {
     mapElement: document.querySelector('.map'),
+    mapCards: document.querySelectorAll('.map__card'),
     similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
     similarCardTemplate: document.querySelector('#card').content.querySelector('.map__card'),
     mapFiltersContainer: document.querySelector('.map__filters-container'),
@@ -19,6 +20,7 @@
     pinElem: document.querySelector('.map__pin--main'),
     muffinElem: document.querySelector('.map__pin--main').querySelector('img'),
     adFormElement: document.querySelector('.ad-form'),
+    noticeElement: document.querySelector('.notice'),
     fieldsetForm: document.querySelector('.ad-form').querySelectorAll('fieldset'),
     selectFilter: document.querySelector('.map__filters-container').querySelectorAll('select'),
     fieldsetFilter: document.querySelector('.map__filters-container').querySelector('fieldset'),
