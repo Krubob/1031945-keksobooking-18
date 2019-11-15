@@ -5,6 +5,7 @@
   window.NUMBER_OF_OBJ = 8;
   window.ENTER_KEYCODE = 13;
   window.ESC_KEYCODE = 27;
+  window.PINS_NUMBER = 5;
 
   window.dom = {
     mapElement: document.querySelector('.map'),

@@ -57,7 +57,7 @@
     var fragment = document.createDocumentFragment();
     var fragmentExtr = document.createDocumentFragment();
 
-    for (var i = 0; i < pins.length - 1; i++) {
+    for (var i = 0; i < PINS_NUMBER; i++) {
       fragment.appendChild(renderPin(pins[i]));
       fragment.appendChild(renderCard(pins[i]));
     }
