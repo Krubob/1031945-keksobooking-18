@@ -67,7 +67,7 @@
     attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
     attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [0]);
     window.guestsNumber[2].selected = true;
-    window.dom.housePrice.placeholder = '0';
+    window.dom.housePrice.placeholder = '1000';
   };
   init();
 
@@ -168,11 +168,11 @@
         // case 'hidden':
         case 'text':
         case 'number':
+        case 'file':
           inputs[m].value = '';
           break;
         case 'radio':
         case 'checkbox':
-        case 'file':
           inputs[m].checked = false;
       }
     }
@@ -196,8 +196,8 @@
       }
     }
 
-    window.dom.housePrice.placeholder = '0';
-
+    // window.dom.housePrice.placeholder = '0';
+    window.dom.preview.src = 'img/muffin-grey.svg';
     // clearing textarea
     var text = window.dom.noticeElement.getElementsByTagName('textarea');
     for (var i = 0; i < text.length; i++) {

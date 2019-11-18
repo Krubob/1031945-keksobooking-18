@@ -28,8 +28,8 @@
   // console.log(window.dom.pinElem.style.top);
   // console.log(window.dom.pinElem.style.left);
 
-  var pinWidthMuffinComputedStyle = window.getComputedStyle(window.dom.pinElem, null);
-  console.log(pinWidthMuffinComputedStyle.width);
+  // var pinWidthMuffinComputedStyle = window.getComputedStyle(window.dom.pinElem, null);
+  // console.log(pinWidthMuffinComputedStyle.width);
   // добавим обработчик события mousedown - начала перемещения пина
   window.dom.pinElem.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -70,8 +70,8 @@
       //   window.dom.pinElem.style.left = -32 + 'px';
       // }
 
-      console.log(window.dom.pinElem.style.top);
-      console.log(window.dom.pinElem.style.left);
+      // console.log(window.dom.pinElem.style.top);
+      // console.log(window.dom.pinElem.style.left);
 
       var pinLeft = window.dom.pinElem.offsetLeft - shift.x;
       var pinTop = window.dom.pinElem.offsetTop - shift.y;

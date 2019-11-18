@@ -13,6 +13,11 @@
     similarPinTemplate: document.querySelector('#pin').content.querySelector('.map__pin'),
     similarCardTemplate: document.querySelector('#card').content.querySelector('.map__card'),
     mapFiltersContainer: document.querySelector('.map__filters-container'),
+    housingType: document.querySelector('.map__filters-container').querySelector('#housing-type'),
+    housingPrice: document.querySelector('.map__filters-container').querySelector('#housing-price'),
+    housingRooms: document.querySelector('.map__filters-container').querySelector('#housing-rooms'),
+    housingGuests: document.querySelector('.map__filters-container').querySelector('#housing-guests'),
+    housingFeatures: document.querySelector('.map__filters-container').querySelector('#housing-features'),
     errorWindow: document.querySelector('#error').content.querySelector('.error'),
     successWindow: document.querySelector('#success').content.querySelector('.success'),
     popupClose: document.querySelector('.popup__close'),
@@ -31,7 +36,9 @@
     houseTypeSelect: document.querySelector('#type'),
     housePrice: document.querySelector('#price'),
     timeinSelect: document.querySelector('#timein'),
-    timeoutSelect: document.querySelector('#timeout')
+    timeoutSelect: document.querySelector('#timeout'),
+    fileChooser: document.querySelector('.ad-form-header__input'),
+    preview: document.querySelector('.ad-form-header__preview').querySelector('img')
   };
 
 })();
