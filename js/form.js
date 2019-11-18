@@ -159,13 +159,12 @@
   });
 
 
-  // записываем функцию для очистки заполненных полей
+  // создаем функцию для очистки заполненных полей
   var recoverFormData = function () {
     // clearing inputs
     var inputs = window.dom.noticeElement.getElementsByTagName('input');
     for (var m = 0; m < inputs.length; m++) {
       switch (inputs[m].type) {
-        // case 'hidden':
         case 'text':
         case 'number':
         case 'file':
@@ -198,6 +197,7 @@
 
     // window.dom.housePrice.placeholder = '0';
     window.dom.preview.src = 'img/muffin-grey.svg';
+
     // clearing textarea
     var text = window.dom.noticeElement.getElementsByTagName('textarea');
     for (var i = 0; i < text.length; i++) {

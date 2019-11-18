@@ -88,8 +88,8 @@
     var fragmentExtr = document.createDocumentFragment();
 
     for (var i = 0; i < window.PINS_NUMBER; i++) {
-      fragment.appendChild(window.renderPin(window.elementsFiltered[i]));
-      fragment.appendChild(window.renderCard(window.elementsFiltered[i]));
+      fragment.appendChild(window.renderPin(window.data[i]));
+      fragment.appendChild(window.renderCard(window.data[i]));
     }
 
     window.dom.similarPins.appendChild(fragment);
@@ -99,6 +99,12 @@
     toOpenCard();
     window.addValueIndex();
     window.getCard();
+
+    window.filterTypes();
+    window.filterPrices();
+    window.filterRooms();
+    window.filterGuests();
+    window.filterFeatures();
   };
 
   // создаем функцию для добавляения каждому пину атрибута value
