@@ -169,7 +169,6 @@
           }
         }
       });
-      // window.renderFiltered();
       window.debounce(window.renderFiltered);
     });
   };
