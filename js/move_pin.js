@@ -28,8 +28,6 @@
   // console.log(window.dom.pinElem.style.top);
   // console.log(window.dom.pinElem.style.left);
 
-  // var pinWidthMuffinComputedStyle = window.getComputedStyle(window.dom.pinElem, null);
-  // console.log(pinWidthMuffinComputedStyle.width);
   // добавим обработчик события mousedown - начала перемещения пина
   window.dom.pinElem.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
