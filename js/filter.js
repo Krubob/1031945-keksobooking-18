@@ -76,19 +76,19 @@
         window.elementsFiltered = window.data.filter(function (element) {
           if (element.offer.price >= 10000 && element.offer.price <= 50000) {
             return element.offer.price;
-          }
+          } return false;
         });
       } else if (valueOpt === 'low') {
         window.elementsFiltered = window.data.filter(function (element) {
           if (element.offer.price <= 10000) {
             return element.offer.price;
-          }
+          } return false;
         });
       } else if (valueOpt === 'high') {
         window.elementsFiltered = window.data.filter(function (element) {
           if (element.offer.price <= 50000) {
             return element.offer.price;
-          }
+          } return false;
         });
       }
       window.renderFiltered();
@@ -171,7 +171,7 @@
               return element.offer.features; // возвращаем соотв. пины
             }
           }
-        }
+        } return false;
       });
       window.debounce(window.renderFiltered);
     });
