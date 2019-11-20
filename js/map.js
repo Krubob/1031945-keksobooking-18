@@ -2,9 +2,16 @@
 
 (function () {
 
+  var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var similarCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var mapElement = document.querySelector('.map');
+  var mapFiltersContainer = document.querySelector('.map__filters-container');
+  window.pinElem = document.querySelector('.map__pin--main');
+  window.similarPins = document.querySelector('.map').querySelector('.map__pins');
+
   // создаем функцию для отрисовки пина и его параметров
   window.renderPin = function (pins) {
-    var pinElement = window.dom.similarPinTemplate.cloneNode(true);
+    var pinElement = similarPinTemplate.cloneNode(true);
 
     var locationX = pins.location.x;
     var locationY = pins.location.y;
@@ -17,7 +24,7 @@
 
   // создаем функцию для отрисовки карточки объявления и ее параметров
   window.renderCard = function (pins) {
-    var cardElement = window.dom.similarCardTemplate.cloneNode(true);
+    var cardElement = similarCardTemplate.cloneNode(true);
 
     cardElement.querySelector('.popup__title').textContent = pins.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = pins.offer.address;
@@ -63,7 +70,7 @@
 
     var createPhoto = function () {
       for (var k = 0; k < pins.offer.photos.length; k++) {
-        var photoElement = window.dom.similarCardTemplate.querySelector('.popup__photo').cloneNode(true);
+        var photoElement = similarCardTemplate.querySelector('.popup__photo').cloneNode(true);
 
         cardElement.querySelector('.popup__photos').append(photoElement);
         cardElement.querySelector('.popup__photos').querySelectorAll('img')[k].src = pins.offer.photos[k];
@@ -90,18 +97,17 @@
       fragment.appendChild(window.renderCard(window.data[i]));
     }
 
-    window.dom.similarPins.appendChild(fragment);
-    window.dom.mapFiltersContainer.before(fragmentExtr);
-    toCloseCard();
+    window.similarPins.appendChild(fragment);
+    mapFiltersContainer.before(fragmentExtr);
+    window.toCloseCard();
     toOpenCard();
     window.addValueIndex();
-    window.getCard();
-
     window.filterTypes();
     window.filterPrices();
     window.filterRooms();
     window.filterGuests();
     window.filterFeatures();
+    window.pinElem.removeEventListener('mousedown', window.toActiveMode);
   };
 
   // создаем функцию для добавляения каждому пину атрибута value
@@ -113,7 +119,7 @@
     });
   };
 
-  // создаем функцию для закрытия всех предудущих открытых окон
+  // создаем функцию для закрытия вcех предудущих открытых окон
   window.closePopups = function () {
     var arrayPopups = document.querySelectorAll('.map__card'); // записываем все dom-элементы в псевдомассив
     arrayPopups.forEach(function (elem) {
@@ -125,14 +131,14 @@
   window.getCard = function () {
     document.querySelector('.map__pins').addEventListener('click', function (evt) {
       var target = evt.target;
-      var button = target.closest('button');
+      var button = target.closest('button.map__pin:not(.map__pin--main)');
       var valuePin = button.value;
       var mapCards = document.querySelectorAll('.map__card');
       window.closePopups();
       mapCards[valuePin].classList.remove('hidden');
-      // console.log(button);
     });
   };
+  window.getCard();
 
   // создаем функцию для открытия объявления по нажатию enter на пин
   var toOpenCard = function () {
@@ -147,10 +153,9 @@
   };
 
   // создаем функцию для закрытия объявления
-  var toCloseCard = function () {
+  window.toCloseCard = function () {
     var cards = document.querySelector('.map__pins').querySelectorAll('.map__card');
     cards.forEach(function (element) {
-
       element.querySelector('.popup__close').addEventListener('click', function () {
         element.classList.add('hidden');
       });
@@ -172,22 +177,22 @@
   // добавляем обработчик ошибки в отдельную переменную и отрисовываем сообщение об ошибке в dom-элемент
   window.errorHandler = function () {
     var error = window.dom.errorWindow;
-    window.dom.mapElement.appendChild(error);
+    mapElement.appendChild(error);
 
-    window.dom.mapElement.querySelector('.error__button').addEventListener('click', function () {
-      window.dom.mapElement.querySelector('.error').classList.add('hidden');
+    mapElement.querySelector('.error__button').addEventListener('click', function () {
+      mapElement.querySelector('.error').classList.add('hidden');
     });
 
     document.addEventListener('keydown', function (evt) {
       evt.preventDefault();
       if (evt.keyCode === window.ESC_KEYCODE) {
-        window.dom.mapElement.querySelector('.error').classList.add('hidden');
+        mapElement.querySelector('.error').classList.add('hidden');
       }
     });
 
-    window.dom.mapElement.addEventListener('click', function (evt) {
+    mapElement.addEventListener('click', function (evt) {
       evt.preventDefault();
-      window.dom.mapElement.querySelector('.error').classList.add('hidden');
+      mapElement.querySelector('.error').classList.add('hidden');
     });
   };
 

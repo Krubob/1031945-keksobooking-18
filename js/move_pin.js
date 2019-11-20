@@ -6,8 +6,8 @@
   var mainPinComputedStyle = window.getComputedStyle(mainPin, null); // width-65px, height-65px
   var mainPinAfterComputedStyle = window.getComputedStyle(mainPin, ':after'); // width-10px, height-22px
   window.startCoords = {
-    x: window.dom.pinElem.offsetLeft,
-    y: window.dom.pinElem.offsetTop
+    x: window.pinElem.offsetLeft,
+    y: window.pinElem.offsetTop
   };
 
   var mainPinOffset = {
@@ -16,10 +16,10 @@
   };
 
   window.coordPinMode = {
-    noActModeX: window.dom.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
-    noActModeY: window.dom.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5),
-    actModeX: window.dom.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
-    actModeY: window.dom.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5 + parseInt(mainPinAfterComputedStyle.height, 10))
+    noActModeX: window.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
+    noActModeY: window.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5),
+    actModeX: window.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
+    actModeY: window.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5 + parseInt(mainPinAfterComputedStyle.height, 10))
   };
 
   var container = document.querySelector('.map');
@@ -54,8 +54,8 @@
 
     mainPin.style.top = window.newCoords.y + 'px';
     mainPin.style.left = window.newCoords.x + 'px';
-    window.dom.inputAddress.placeholder = window.newCoords.x + ' ' + window.newCoords.y;
-    window.dom.inputAddress.value = window.newCoords.x + ' ' + window.newCoords.y;
+    window.inputAddress.placeholder = window.newCoords.x + ' ' + window.newCoords.y;
+    window.inputAddress.value = window.newCoords.x + ' ' + window.newCoords.y;
   };
 
   // при отпускании кнопки мыши необходимо переставать слушать события движения мыши

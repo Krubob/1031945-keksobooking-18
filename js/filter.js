@@ -1,8 +1,14 @@
 'use strict';
 (function () {
 
+  var housingType = document.querySelector('.map__filters-container').querySelector('#housing-type');
+  var housingPrice = document.querySelector('.map__filters-container').querySelector('#housing-price');
+  var housingRooms = document.querySelector('.map__filters-container').querySelector('#housing-rooms');
+  var housingGuests = document.querySelector('.map__filters-container').querySelector('#housing-guests');
+  var housingFeatures = document.querySelector('.map__filters-container').querySelector('#housing-features');
+
   window.removePins = function () {
-    var arrayPins = window.dom.similarPins.querySelectorAll('.map__pin:not(.map__pin--main)'); // записываем все dom-элементы в псевдомассив
+    var arrayPins = window.similarPins.querySelectorAll('.map__pin:not(.map__pin--main)'); // записываем все dom-элементы в псевдомассив
     arrayPins.forEach(function (elem) {
       elem.remove();
     });
@@ -17,16 +23,17 @@
 
   window.renderFiltered = function () {
     for (var i = 0; i < window.PINS_NUMBER; i++) {
-      window.dom.similarPins.appendChild(window.renderPin(window.elementsFiltered[i]));
-      window.dom.similarPins.appendChild(window.renderCard(window.elementsFiltered[i]));
+      window.similarPins.appendChild(window.renderPin(window.elementsFiltered[i]));
+      window.similarPins.appendChild(window.renderCard(window.elementsFiltered[i]));
       window.addValueIndex(); // добавляем новые индексы
       window.getCard(); // добавляем синхронизацию клика по пину и открытия нужного объявления
+      window.toCloseCard();
     }
   };
 
   window.filterTypes = function () {
-    window.dom.housingType.addEventListener('change', function () {
-      var valueOpt = window.dom.housingType.value;
+    housingType.addEventListener('change', function () {
+      var valueOpt = housingType.value;
       window.removePins();
       window.removeCards();
       window.closePopups();
@@ -56,8 +63,8 @@
   };
 
   window.filterPrices = function () {
-    window.dom.housingPrice.addEventListener('change', function () {
-      var valueOpt = window.dom.housingPrice.value;
+    housingPrice.addEventListener('change', function () {
+      var valueOpt = housingPrice.value;
       window.removePins();
       window.removeCards();
       window.closePopups();
@@ -89,8 +96,8 @@
   };
 
   window.filterRooms = function () {
-    window.dom.housingRooms.addEventListener('change', function () {
-      var valueOpt = window.dom.housingRooms.value;
+    housingRooms.addEventListener('change', function () {
+      var valueOpt = housingRooms.value;
       window.removePins();
       window.removeCards();
       window.closePopups();
@@ -116,8 +123,8 @@
   };
 
   window.filterGuests = function () {
-    window.dom.housingGuests.addEventListener('change', function () {
-      var valueOpt = window.dom.housingGuests.value;
+    housingGuests.addEventListener('change', function () {
+      var valueOpt = housingGuests.value;
       window.removePins();
       window.removeCards();
       window.closePopups();
@@ -143,10 +150,10 @@
   };
 
   window.filterFeatures = function () {
-    var checkboxes = window.dom.housingFeatures.querySelectorAll('input'); // записываем в псевдомассив все найденные чекбоксы из блока дополнительных услуг
+    var checkboxes = housingFeatures.querySelectorAll('input'); // записываем в псевдомассив все найденные чекбоксы из блока дополнительных услуг
     var checkboxesArr = Array.from(checkboxes); // преобразуем псевдомассив в массив
     // создаем обработчик события на изменение чекбоксов
-    window.dom.housingFeatures.addEventListener('change', function () {
+    housingFeatures.addEventListener('change', function () {
       window.removePins();
       window.removeCards();
       window.closePopups();

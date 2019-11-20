@@ -22,7 +22,7 @@
       var reader = new FileReader(); // создаем FileReader
 
       reader.addEventListener('load', function () {
-        window.dom.preview.src = reader.result; // записываем результат в src
+        window.preview.src = reader.result; // записываем результат в src
       });
 
       reader.readAsDataURL(file); // читаем dataURL картики

@@ -2,6 +2,18 @@
 
 (function () {
 
+  var mapElement = document.querySelector('.map');
+  var adFormElement = document.querySelector('.ad-form');
+  var fieldsetFilter = document.querySelector('.map__filters-container').querySelector('fieldset');
+  var selectFilter = document.querySelector('.map__filters-container').querySelectorAll('select');
+  var fieldsetForm = document.querySelector('.ad-form').querySelectorAll('fieldset');
+  var housePrice = document.querySelector('#price');
+  var noticeElement = document.querySelector('.notice');
+  var successWindow = document.querySelector('#success').content.querySelector('.success');
+  var submitForm = document.querySelector('.ad-form');
+  window.inputAddress = document.querySelector('#address');
+  window.preview = document.querySelector('.ad-form-header__preview').querySelector('img');
+
   // создаем функцию для присваивания атрибута disabled массиву
   var blockSelect = function (array) {
     for (var j = 0; j < array.length; j++) {
@@ -18,22 +30,22 @@
 
   // создаем функцию, которая делает доступными элементы страницы при её активации
   window.toActiveMode = function () {
-    window.dom.mapElement.classList.remove('map--faded'); // активация карты
-    window.dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
-    window.dom.inputAddress.placeholder = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
-    window.dom.inputAddress.value = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
-    unblockSelect(window.dom.fieldsetForm); // разблокировка масиива полей создания объявления
-    unblockSelect(window.dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
-    window.dom.fieldsetFilter.disabled = false; // разблокировка полей фильтра объявлений
+    mapElement.classList.remove('map--faded'); // активация карты
+    adFormElement.classList.remove('ad-form--disabled'); // активация формы
+    window.inputAddress.placeholder = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
+    window.inputAddress.value = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
+    unblockSelect(fieldsetForm); // разблокировка масиива полей создания объявления
+    unblockSelect(selectFilter); // разблокировка массива полей выбора фильтра объявлений
+    fieldsetFilter.disabled = false; // разблокировка полей фильтра объявлений
     window.load.startLoad(window.successHandler, window.errorHandler);
   };
 
   // переход в активное состояние при нажатии на метку
-  window.dom.pinElem.addEventListener('mousedown', window.toActiveMode);
+  window.pinElem.addEventListener('mousedown', window.toActiveMode);
 
 
   // переход в активное состояние при нажатии на Enter
-  window.dom.pinElem.addEventListener('keydown', function (evt) {
+  window.pinElem.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.ENTER_KEYCODE) {
       window.toActiveMode();
     }
@@ -52,23 +64,23 @@
 
   // создаем функцию для генерации начальных значений
   var init = function () {
-    window.dom.pinElem.style.left = window.dom.pinElem.offsetLeft + 'px';
-    window.dom.pinElem.style.top = window.dom.pinElem.offsetTop + 'px';
-    window.dom.inputAddress.placeholder = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // начальные координаты метки
-    window.dom.inputAddress.value = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // -//-
-    blockSelect(window.dom.fieldsetForm); // блокировка масиива полей создания объявления
-    blockSelect(window.dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
-    window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
-    window.guestsNumber = window.dom.guestsNumberSelect;
-    window.roomsNumber = window.dom.roomsNumberSelect;
-    window.houseType = window.dom.houseTypeSelect;
-    window.timein = window.dom.timeinSelect;
-    window.timeout = window.dom.timeoutSelect;
-    window.houseTypePrice = window.dom.houseTypeInput;
+    window.pinElem.style.left = window.pinElem.offsetLeft + 'px';
+    window.pinElem.style.top = window.pinElem.offsetTop + 'px';
+    window.inputAddress.placeholder = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // начальные координаты метки
+    window.inputAddress.value = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // -//-
+    blockSelect(fieldsetForm); // блокировка масиива полей создания объявления
+    blockSelect(selectFilter); // блокировка массива полей выбора фильтра объявлений
+    fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
+    window.guestsNumber = document.querySelector('#capacity');
+    window.roomsNumber = document.querySelector('#room_number');
+    window.houseType = document.querySelector('#type');
+    window.timein = document.querySelector('#timein');
+    window.timeout = document.querySelector('#timeout');
+    window.houseTypePrice = document.querySelector('#price');
     attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
     attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [0]);
     window.guestsNumber[2].selected = true;
-    window.dom.housePrice.placeholder = '1000';
+    housePrice.placeholder = '1000';
   };
   init();
 
@@ -96,17 +108,17 @@
   window.houseType.addEventListener('change', function () {
     var valueOpt = window.houseType.value;
     if (valueOpt === 'bungalo') {
-      window.dom.housePrice.min = '0';
-      window.dom.housePrice.placeholder = '0';
+      housePrice.min = '0';
+      housePrice.placeholder = '0';
     } else if (valueOpt === 'flat') {
-      window.dom.housePrice.min = '1000';
-      window.dom.housePrice.placeholder = '1000';
+      housePrice.min = '1000';
+      housePrice.placeholder = '1000';
     } else if (valueOpt === 'house') {
-      window.dom.housePrice.min = '5000';
-      window.dom.housePrice.placeholder = '5000';
+      housePrice.min = '5000';
+      housePrice.placeholder = '5000';
     } else if (valueOpt === 'palace') {
-      window.dom.housePrice.min = '10000';
-      window.dom.housePrice.placeholder = '10000';
+      housePrice.min = '10000';
+      housePrice.placeholder = '10000';
     } else {
       window.houseType.setCustomValidity('');
     }
@@ -143,19 +155,19 @@
   });
 
   // подписываемся на событие отправки формы
-  window.dom.submitForm.addEventListener('submit', function (evtSub) {
+  submitForm.addEventListener('submit', function (evtSub) {
     evtSub.preventDefault();
-    window.dom.mapElement.appendChild(window.dom.successWindow); // вывод сообщения об успешной отправке
-    window.upload.startUpload(new FormData(window.dom.submitForm), function () {
+    mapElement.appendChild(successWindow); // вывод сообщения об успешной отправке
+    window.upload.startUpload(new FormData(submitForm), function () {
 
       // возвращаем метку в исходное состояние
-      window.dom.pinElem.style.left = window.startCoords.x + 'px';
-      window.dom.pinElem.style.top = window.startCoords.y + 'px';
+      window.pinElem.style.left = window.startCoords.x + 'px';
+      window.pinElem.style.top = window.startCoords.y + 'px';
 
       window.closePopups(); // закрываем карточку открытыго объявления
-      window.dom.preview.src = 'img/muffin-grey.svg';
       window.toActiveMode();
       recoverFormData();// вызываем функцию для очистки заполненных полей
+      window.preview.src = 'img/muffin-grey.svg';
 
       // подписываемся на нажатие Esc для закрытия сообщения об успешной отправке
       document.addEventListener('keydown', function (evt) {
@@ -177,7 +189,7 @@
   // создаем функцию для очистки заполненных полей
   var recoverFormData = function () {
     // clearing inputs
-    var inputs = window.dom.noticeElement.getElementsByTagName('input');
+    var inputs = noticeElement.getElementsByTagName('input');
     for (var m = 0; m < inputs.length; m++) {
       switch (inputs[m].type) {
         case 'text':
@@ -191,7 +203,7 @@
       }
     }
     // clearing selects
-    var selects = window.dom.noticeElement.getElementsByTagName('select');
+    var selects = noticeElement.getElementsByTagName('select');
     for (var k = 0; k < selects.length; k++) {
       switch (selects[k].id) {
         case 'type':
@@ -211,7 +223,7 @@
     }
 
     // clearing textarea
-    var text = window.dom.noticeElement.getElementsByTagName('textarea');
+    var text = noticeElement.getElementsByTagName('textarea');
     for (var i = 0; i < text.length; i++) {
       text[i].value = '';
     }
