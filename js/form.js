@@ -20,8 +20,8 @@
   window.toActiveMode = function () {
     window.dom.mapElement.classList.remove('map--faded'); // активация карты
     window.dom.adFormElement.classList.remove('ad-form--disabled'); // активация формы
-    window.dom.inputAddress.placeholder = window.pinCoordinates.pinActiveModeX() + ' ' + window.pinCoordinates.pinActiveModeY();
-    window.dom.inputAddress.value = window.pinCoordinates.pinActiveModeX() + ' ' + window.pinCoordinates.pinActiveModeY();
+    window.dom.inputAddress.placeholder = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
+    window.dom.inputAddress.value = window.coordPinMode.actModeX + ' ' + window.coordPinMode.actModeY;
     unblockSelect(window.dom.fieldsetForm); // разблокировка масиива полей создания объявления
     unblockSelect(window.dom.selectFilter); // разблокировка массива полей выбора фильтра объявлений
     window.dom.fieldsetFilter.disabled = false; // разблокировка полей фильтра объявлений
@@ -30,7 +30,7 @@
 
   // переход в активное состояние при нажатии на метку
   window.dom.pinElem.addEventListener('mousedown', window.toActiveMode);
-  // window.dom.pinElem.removeEventListener('mousedown', window.toActiveMode);
+
 
   // переход в активное состояние при нажатии на Enter
   window.dom.pinElem.addEventListener('keydown', function (evt) {
@@ -52,10 +52,10 @@
 
   // создаем функцию для генерации начальных значений
   var init = function () {
-    window.dom.pinElem.style.left = window.pinCoordinates.pinLeft + 'px';
-    window.dom.pinElem.style.top = window.pinCoordinates.pinTop + 'px';
-    window.dom.inputAddress.placeholder = window.pinCoordinates.pinNoActiveModeX() + ' ' + window.pinCoordinates.pinNoActiveModeY(); // начальные координаты метки
-    window.dom.inputAddress.value = window.pinCoordinates.pinNoActiveModeX() + ' ' + window.pinCoordinates.pinNoActiveModeY(); // -//-
+    window.dom.pinElem.style.left = window.dom.pinElem.offsetLeft + 'px';
+    window.dom.pinElem.style.top = window.dom.pinElem.offsetTop + 'px';
+    window.dom.inputAddress.placeholder = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // начальные координаты метки
+    window.dom.inputAddress.value = window.coordPinMode.noActModeX + ' ' + window.coordPinMode.noActModeY; // -//-
     blockSelect(window.dom.fieldsetForm); // блокировка масиива полей создания объявления
     blockSelect(window.dom.selectFilter); // блокировка массива полей выбора фильтра объявлений
     window.dom.fieldsetFilter.disabled = true; // блокировка поля фильтра объявлений
@@ -64,6 +64,7 @@
     window.houseType = window.dom.houseTypeSelect;
     window.timein = window.dom.timeinSelect;
     window.timeout = window.dom.timeoutSelect;
+    window.houseTypePrice = window.dom.houseTypeInput;
     attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]); // начальное состояние select для количества гостей
     attachAttrDisabled([window.timeout[0], window.timeout[1], window.timeout[2]], [0]);
     window.guestsNumber[2].selected = true;
@@ -75,13 +76,17 @@
   window.roomsNumber.addEventListener('change', function () {
     var valueOpt = window.roomsNumber.value;
     if (valueOpt === '1') {
+      window.guestsNumber[2].selected = true;
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [2]);
     } else if (valueOpt === '2') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [1, 2]);
+      window.guestsNumber[1].selected = true;
     } else if (valueOpt === '3') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [0, 1, 2]);
+      window.guestsNumber[0].selected = true;
     } else if (valueOpt === '100') {
       attachAttrDisabled([window.guestsNumber[0], window.guestsNumber[1], window.guestsNumber[2], window.guestsNumber[3]], [3]);
+      window.guestsNumber[3].selected = true;
     } else {
       window.roomsNumber.setCustomValidity('');
     }
@@ -107,6 +112,22 @@
     }
   });
 
+  window.houseTypePrice.addEventListener('input', function (evt) {
+    var valueOpt = window.houseType.value;
+    var target = evt.target;
+    if (valueOpt === 'bungalo' && target.value !== '0') {
+      target.setCustomValidity('Цена за ночь должна быть равна 0 руб.');
+    } else if (valueOpt === 'flat' && target.value !== '1000') {
+      target.setCustomValidity('Цена за ночь должна быть равна 1000 руб.');
+    } else if (valueOpt === 'house' && target.value !== '5000') {
+      target.setCustomValidity('Цена за ночь должна быть равна 5000 руб.');
+    } else if (valueOpt === 'palace' && target.value !== '10000') {
+      target.setCustomValidity('Цена за ночь должна быть равна 10000 руб.');
+    } else {
+      target.setCustomValidity('');
+    }
+  });
+
   // -//- синхронизируем варианты выбора времени заезда и выезда
   window.timein.addEventListener('change', function () {
     var valueOpt = window.timein.value;
@@ -122,50 +143,43 @@
   });
 
   // подписываемся на событие отправки формы
-  window.dom.submitForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
+  window.dom.submitForm.addEventListener('submit', function (evtSub) {
+    evtSub.preventDefault();
     window.dom.mapElement.appendChild(window.dom.successWindow); // вывод сообщения об успешной отправке
     window.upload.startUpload(new FormData(window.dom.submitForm), function () {
 
       // возвращаем метку в исходное состояние
-      window.dom.pinElem.style.left = window.pinCoordinates.pinLeft + 'px';
-      window.dom.pinElem.style.top = window.pinCoordinates.pinTop + 'px';
-
-      // записываем начальные значения метки в поля плейсхолдера и адреса
-      window.dom.inputAddress.placeholder = window.pinCoordinates.pinNoActiveModeX() + ' ' + window.pinCoordinates.pinNoActiveModeY();
-      window.dom.inputAddress.value = window.pinCoordinates.pinNoActiveModeX() + ' ' + window.pinCoordinates.pinNoActiveModeY();
+      window.dom.pinElem.style.left = window.startCoords.x + 'px';
+      window.dom.pinElem.style.top = window.startCoords.y + 'px';
 
       window.closePopups(); // закрываем карточку открытыго объявления
-
+      window.dom.preview.src = 'img/muffin-grey.svg';
+      window.toActiveMode();
       recoverFormData();// вызываем функцию для очистки заполненных полей
 
       // подписываемся на нажатие Esc для закрытия сообщения об успешной отправке
-      document.addEventListener('keydown', function (event) {
-        event.preventDefault();
-        if (event.keyCode === window.ESC_KEYCODE) {
-          // console.log('Esc pressed');
+      document.addEventListener('keydown', function (evt) {
+        evt.preventDefault();
+        if (evt.keyCode === window.ESC_KEYCODE) {
           document.querySelector('.map').querySelector('.success').classList.add('hidden');
         }
       });
 
       // подписываемся на клик мышью для закрытия сообщения об успешной отправке
-      document.querySelector('.map').querySelector('.success').addEventListener('click', function () {
+      document.querySelector('.map').querySelector('.success').addEventListener('click', function (evt) {
         evt.preventDefault();
-        // console.log('Mouse clicked');
         document.querySelector('.map').querySelector('.success').classList.add('hidden');
       });
 
     });
   });
 
-
-  // записываем функцию для очистки заполненных полей
+  // создаем функцию для очистки заполненных полей
   var recoverFormData = function () {
     // clearing inputs
     var inputs = window.dom.noticeElement.getElementsByTagName('input');
     for (var m = 0; m < inputs.length; m++) {
       switch (inputs[m].type) {
-        // case 'hidden':
         case 'text':
         case 'number':
         case 'file':
@@ -196,8 +210,6 @@
       }
     }
 
-    // window.dom.housePrice.placeholder = '0';
-    window.dom.preview.src = 'img/muffin-grey.svg';
     // clearing textarea
     var text = window.dom.noticeElement.getElementsByTagName('textarea');
     for (var i = 0; i < text.length; i++) {

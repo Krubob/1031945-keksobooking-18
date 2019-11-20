@@ -19,42 +19,42 @@
   window.renderCard = function (pins) {
     var cardElement = window.dom.similarCardTemplate.cloneNode(true);
 
-    cardElement.querySelector('.popup__title').innerHTML = pins.offer.title;
-    cardElement.querySelector('.popup__text--address').innerHTML = pins.offer.address;
-    cardElement.querySelector('.popup__text--price').innerHTML = pins.offer.price + '₽/ночь';
+    cardElement.querySelector('.popup__title').textContent = pins.offer.title;
+    cardElement.querySelector('.popup__text--address').textContent = pins.offer.address;
+    cardElement.querySelector('.popup__text--price').textContent = pins.offer.price + '₽/ночь';
     if (pins.offer.type === 'flat') {
-      cardElement.querySelector('.popup__type').innerHTML = 'Квартира';
+      cardElement.querySelector('.popup__type').textContent = 'Квартира';
     } else if (pins.offer.type === 'bungalo') {
-      cardElement.querySelector('.popup__type').innerHTML = 'Бунгало';
+      cardElement.querySelector('.popup__type').textContent = 'Бунгало';
     } else if (pins.offer.type === 'house') {
-      cardElement.querySelector('.popup__type').innerHTML = 'Дом';
+      cardElement.querySelector('.popup__type').textContent = 'Дом';
     } else if (pins.offer.type === 'palace') {
-      cardElement.querySelector('.popup__type').innerHTML = 'Дворец';
+      cardElement.querySelector('.popup__type').textContent = 'Дворец';
     }
-    cardElement.querySelector('.popup__text--capacity').innerHTML = pins.offer.rooms + ' комната для' + ' ' + pins.offer.guests + ' гостей';
-    cardElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + pins.offer.checkin + ', выезд до ' + pins.offer.checkout;
-    cardElement.querySelector('.popup__description').innerHTML = pins.offer.description;
+    cardElement.querySelector('.popup__text--capacity').textContent = pins.offer.rooms + ' комната для' + ' ' + pins.offer.guests + ' гостей';
+    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pins.offer.checkin + ', выезд до ' + pins.offer.checkout;
+    cardElement.querySelector('.popup__description').textContent = pins.offer.description;
     cardElement.querySelector('.popup__avatar').src = pins.author.avatar;
 
     var createFeaturesList = function () {
       var featuresList = cardElement.querySelector('.popup__features').querySelectorAll('.popup__feature');
       pins.offer.features.forEach(function (elem) { // записываем наименования доступных feautures внутрь тега cоотв. li
         if (elem === 'wifi') {
-          featuresList[0].innerHTML = 'wifi';
+          featuresList[0].textContent = 'wifi';
         } else if (elem === 'dishwasher') {
-          featuresList[1].innerHTML = 'dishwasher';
+          featuresList[1].textContent = 'dishwasher';
         } else if (elem === 'parking') {
-          featuresList[2].innerHTML = 'parking';
+          featuresList[2].textContent = 'parking';
         } else if (elem === 'washer') {
-          featuresList[3].innerHTML = 'washer';
+          featuresList[3].textContent = 'washer';
         } else if (elem === 'elevator') {
-          featuresList[4].innerHTML = 'elevator';
+          featuresList[4].textContent = 'elevator';
         } else if (elem === 'conditioner') {
-          featuresList[5].innerHTML = 'conditioner';
+          featuresList[5].textContent = 'conditioner';
         }
       });
       featuresList.forEach(function (elem) { // удаляем теги li с пустыми значениями
-        if (elem.innerHTML === '') {
+        if (elem.textContent === '') {
           elem.remove();
         }
       });
@@ -82,23 +82,26 @@
   window.successHandler = function (pins) {
     window.data = pins;
     window.elementsFiltered = window.data;
-    console.log(window.elementsFiltered);
-    // console.log(data);
     var fragment = document.createDocumentFragment();
     var fragmentExtr = document.createDocumentFragment();
 
     for (var i = 0; i < window.PINS_NUMBER; i++) {
-      fragment.appendChild(window.renderPin(window.elementsFiltered[i]));
-      fragment.appendChild(window.renderCard(window.elementsFiltered[i]));
+      fragment.appendChild(window.renderPin(window.data[i]));
+      fragment.appendChild(window.renderCard(window.data[i]));
     }
 
     window.dom.similarPins.appendChild(fragment);
     window.dom.mapFiltersContainer.before(fragmentExtr);
-
     toCloseCard();
     toOpenCard();
     window.addValueIndex();
     window.getCard();
+
+    window.filterTypes();
+    window.filterPrices();
+    window.filterRooms();
+    window.filterGuests();
+    window.filterFeatures();
   };
 
   // создаем функцию для добавляения каждому пину атрибута value
@@ -120,7 +123,6 @@
 
   // создаем функцию, которая добавляет синхронизацию клика по пину и открытия нужного объявления
   window.getCard = function () {
-    window.dom.pinElem.removeEventListener('mousedown', window.toActiveMode);
     document.querySelector('.map__pins').addEventListener('click', function (evt) {
       var target = evt.target;
       var button = target.closest('button');
@@ -139,7 +141,6 @@
       element.addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.ENTER_KEYCODE) {
           element.classList.remove('hidden');
-          // console.log('Button pin clicked');
         }
       });
     });
@@ -152,20 +153,17 @@
 
       element.querySelector('.popup__close').addEventListener('click', function () {
         element.classList.add('hidden');
-        // console.log('Сlose button clicked');
       });
 
       element.querySelector('.popup__close').addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.ENTER_KEYCODE) {
           element.querySelector('.map__card').classList.add('hidden');
-          // console.log('Enter button clicked');
         }
       });
 
       document.querySelector('.map').addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.ESC_KEYCODE) {
           element.classList.add('hidden');
-          // console.log('Esc button clicked');
         }
       });
     });
@@ -178,22 +176,19 @@
 
     window.dom.mapElement.querySelector('.error__button').addEventListener('click', function () {
       window.dom.mapElement.querySelector('.error').classList.add('hidden');
-      // console.log('Сlose button clicked');
     });
 
     document.addEventListener('keydown', function (evt) {
       evt.preventDefault();
       if (evt.keyCode === window.ESC_KEYCODE) {
         window.dom.mapElement.querySelector('.error').classList.add('hidden');
-        // console.log('Esc button clicked');
       }
     });
 
-    // window.dom.mapElement.addEventListener('click', function (evt) {
-    //   evt.preventDefault();
-    //   window.dom.mapElement.querySelector('.error').classList.add('hidden');
-    //   // console.log('Window clicked');
-    // });
+    window.dom.mapElement.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      window.dom.mapElement.querySelector('.error').classList.add('hidden');
+    });
   };
 
 })();

@@ -34,6 +34,7 @@
     roomsNumberSelect: document.querySelector('#room_number'),
     guestsNumberSelect: document.querySelector('#capacity'),
     houseTypeSelect: document.querySelector('#type'),
+    houseTypeInput: document.querySelector('#price'),
     housePrice: document.querySelector('#price'),
     timeinSelect: document.querySelector('#timein'),
     timeoutSelect: document.querySelector('#timeout'),

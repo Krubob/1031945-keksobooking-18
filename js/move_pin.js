@@ -2,104 +2,83 @@
 
 (function () {
 
-  // создаем объект для хранения координат пина
-  window.pinCoordinates = {
-    pinTop: window.dom.pinElem.offsetTop, // 375px координаты по вертикали верхней левой точки метки
-    pinLeft: window.dom.pinElem.offsetLeft, // 570px координаты по горизонтали верхней левой точки
-    pinComputedStyle: window.getComputedStyle(window.dom.pinElem, null), // 44px высота круглой метки, 40px ширина круглой метки
-    endOfPinComputedStyle: window.getComputedStyle(window.dom.pinElem, ':after'), // 22px высота острого конца метки, 10px ширина острого конца метки
-    pinNoActiveModeX: function () { // до активации в поле адрес записываем координаты центра метки
-      var pinValueX = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.pinComputedStyle.height, 10));
-      return pinValueX;
-    },
-    pinNoActiveModeY: function () { // до активации в поле адрес записываем координаты центра метки
-      var pinValueY = (window.dom.pinElem.offsetTop + 0.5 * parseInt(window.pinCoordinates.pinComputedStyle.height, 10));
-      return pinValueY;
-    },
-    pinActiveModeX: function () { // после активации в поле адрес записываем координаты острого конца метки
-      var pinValueX = (window.dom.pinElem.offsetLeft + 0.5 * parseInt(window.pinCoordinates.endOfPinComputedStyle.width, 10));
-      return pinValueX;
-    },
-    pinActiveModeY: function () { // после активации в поле адрес записываем координаты острого конца метки
-      var pinValueY = (window.dom.pinElem.offsetTop + parseInt(window.pinCoordinates.pinComputedStyle.height, 10) + parseInt(window.pinCoordinates.endOfPinComputedStyle.height, 10));
-      return pinValueY;
-    }
+  var mainPin = document.querySelector('.map__pin--main');
+  var mainPinComputedStyle = window.getComputedStyle(mainPin, null); // width-65px, height-65px
+  var mainPinAfterComputedStyle = window.getComputedStyle(mainPin, ':after'); // width-10px, height-22px
+  window.startCoords = {
+    x: window.dom.pinElem.offsetLeft,
+    y: window.dom.pinElem.offsetTop
   };
-  // console.log(window.dom.pinElem.style.top);
-  // console.log(window.dom.pinElem.style.left);
 
-  // var pinWidthMuffinComputedStyle = window.getComputedStyle(window.dom.pinElem, null);
-  // console.log(pinWidthMuffinComputedStyle.width);
+  var mainPinOffset = {
+    x: Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
+    y: Math.floor(parseInt(mainPinComputedStyle.height, 10) + parseInt(mainPinAfterComputedStyle.height, 10)),
+  };
+
+  window.coordPinMode = {
+    noActModeX: window.dom.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
+    noActModeY: window.dom.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5),
+    actModeX: window.dom.pinElem.offsetLeft + Math.floor(parseInt(mainPinComputedStyle.width, 10) * 0.5),
+    actModeY: window.dom.pinElem.offsetTop + Math.floor(parseInt(mainPinComputedStyle.height, 10) * 0.5 + parseInt(mainPinAfterComputedStyle.height, 10))
+  };
+
+  var container = document.querySelector('.map');
+  var containerComputedStyle = window.getComputedStyle(container, null);
+
+  // при каждом движении мыши необходимо обновлять смещение относительно первоначальной точки
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    if (!mainPin.dragged) {
+      return;
+    }
+
+    var сoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY,
+    };
+
+    window.newCoords = {
+      x: сoords.x - mainPin.shift.x,
+      y: сoords.y - mainPin.shift.y,
+    };
+
+    // console.log('newCoords', window.newCoords, mainPinOffset, containerComputedStyle.width);
+
+    if (window.newCoords.x + mainPinOffset.x >= parseInt(containerComputedStyle.width, 10)
+      || window.newCoords.x + mainPinOffset.x <= 0
+      || window.newCoords.y + mainPinOffset.y <= 130
+      || window.newCoords.y + mainPinOffset.y >= 630) {
+      return;
+    }
+
+    mainPin.style.top = window.newCoords.y + 'px';
+    mainPin.style.left = window.newCoords.x + 'px';
+    window.dom.inputAddress.placeholder = window.newCoords.x + ' ' + window.newCoords.y;
+    window.dom.inputAddress.value = window.newCoords.x + ' ' + window.newCoords.y;
+  };
+
+  // при отпускании кнопки мыши необходимо переставать слушать события движения мыши
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+    mainPin.dragged = false;
+  };
+
   // добавим обработчик события mousedown - начала перемещения пина
-  window.dom.pinElem.addEventListener('mousedown', function (evt) {
+  mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    var startCoords = {// запоминаем начальные координаты
-      x: evt.clientX,
-      y: evt.clientY
+    var shift = {
+      x: evt.clientX - mainPin.offsetLeft,
+      y: evt.clientY - mainPin.offsetTop,
     };
 
-    // var mapWidth = window.getComputedStyle(document.querySelector('.map'), null).width; // 1200px
-    // console.log(mapWidth);
-
-    var dragged = false;
-    // при каждом движении мыши необходимо обновлять смещение относительно первоначальной точки
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-      dragged = true;
-
-      var shift = {// величина смещения
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
-
-      startCoords = {// новые начальные координаты
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      // добавляем ограничения на перемещение пина
-      if (window.dom.pinElem.style.top <= '130') {
-        window.dom.pinElem.style.top = 130 + 'px';
-      } else if (window.dom.pinElem.style.top >= '630') {
-        window.dom.pinElem.style.top = 630 + 'px';
-      }
-      // if (window.dom.pinElem.style.left >= '1170') {
-      //   window.dom.pinElem.style.left = 1170 + 'px';
-      // } else if (window.dom.pinElem.style.left <= '-32') {
-      //   window.dom.pinElem.style.left = -32 + 'px';
-      // }
-
-      // console.log(window.dom.pinElem.style.top);
-      // console.log(window.dom.pinElem.style.left);
-
-      var pinLeft = window.dom.pinElem.offsetLeft - shift.x;
-      var pinTop = window.dom.pinElem.offsetTop - shift.y;
-
-      // записываем координаты острого конца метки в поле атрибут style
-      window.dom.pinElem.style.left = pinLeft + 'px';
-      window.dom.pinElem.style.top = pinTop + 'px';
-
-      // записываем координаты острого конца метки в поле адреса и плейсхолдер
-      window.dom.inputAddress.placeholder = pinLeft + ' ' + pinTop;
-      window.dom.inputAddress.value = pinLeft + ' ' + pinTop;
-    };
-
-    // при отпускании кнопки мыши необходимо переставать слушать события движения мыши
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-
-      if (dragged) {
-        var onClickPreventDefault = function () {
-          evt.preventDefault();
-          window.dom.pinElem.removeEventListener('click', onClickPreventDefault);
-        };
-        window.dom.pinElem.addEventListener('click', onClickPreventDefault);
-      }
-    };
+    mainPin.shift = shift;
+    mainPin.dragged = true;
 
     document.addEventListener('mousemove', onMouseMove); // добавим обработчики события передвижения мыши
     document.addEventListener('mouseup', onMouseUp); // добавим обработчики события отпускания мыши
